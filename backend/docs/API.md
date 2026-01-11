@@ -1,6 +1,6 @@
 # Twinkle REST API Reference
 
-Complete API reference for the Twinkle Protocol REST API.
+Complete API reference for the Twinkle REST API.
 
 **Base URL**: `http://localhost:3000` (development)
 

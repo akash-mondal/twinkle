@@ -1,5 +1,5 @@
 /**
- * API Client for Twinkle Protocol
+ * API Client for Twinkle
  * Wraps all REST endpoints for easy access
  */
 

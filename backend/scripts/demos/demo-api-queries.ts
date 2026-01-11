@@ -13,7 +13,7 @@ const DEPLOYER = '0x61D3bbc2f8fF4f2292ea485Ef9E39560D7DB8465';
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - API Queries Demo');
+  console.log('Twinkle - API Queries Demo');
   console.log('='.repeat(60));
   console.log(`API URL: ${CONFIG.apiUrl}\n`);
 

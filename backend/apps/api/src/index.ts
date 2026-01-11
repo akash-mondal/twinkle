@@ -1,5 +1,5 @@
 /**
- * Twinkle Protocol REST API
+ * Twinkle REST API
  * Provides read access to indexed blockchain data
  * Production-hardened with Redis, logging, rate limiting, and health checks
  */

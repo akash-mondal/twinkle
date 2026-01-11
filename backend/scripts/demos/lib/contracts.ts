@@ -1,5 +1,5 @@
 /**
- * Contract interaction helpers for Twinkle Protocol
+ * Contract interaction helpers for Twinkle
  * Provides typed contract calls using viem
  */
 

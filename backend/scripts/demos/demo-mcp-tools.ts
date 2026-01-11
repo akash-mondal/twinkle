@@ -58,7 +58,7 @@ async function listTools(): Promise<unknown[]> {
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - MCP Server Tools Demo');
+  console.log('Twinkle - MCP Server Tools Demo');
   console.log('='.repeat(60));
   console.log(`MCP Server URL: ${MCP_URL}\n`);
 

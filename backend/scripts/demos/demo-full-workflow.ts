@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Demo: Full Twinkle Protocol Workflow
+ * Demo: Full Twinkle Workflow
  * End-to-end demonstration of all protocol features
  *
  * Run: npx tsx demo-full-workflow.ts

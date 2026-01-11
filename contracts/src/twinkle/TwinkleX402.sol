@@ -41,7 +41,7 @@ interface ITwinklePay {
 /**
  * @title TwinkleX402
  * @notice x402 HTTP Payment Protocol Implementation for MNEE
- * @author Twinkle Protocol
+ * @author Twinkle
  *
  * @dev Enables AI agents to pay for content using the x402 protocol:
  *

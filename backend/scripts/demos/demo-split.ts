@@ -22,7 +22,7 @@ import { api } from './lib/api.js';
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - Revenue Split Demo');
+  console.log('Twinkle - Revenue Split Demo');
   console.log('='.repeat(60));
   console.log(`Chain: Sepolia (${CONFIG.chainId})`);
   console.log(`TwinkleSplit: ${CONFIG.contracts.TwinkleSplit}\n`);

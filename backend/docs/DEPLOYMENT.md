@@ -1,6 +1,6 @@
 # Twinkle Backend Deployment Guide
 
-Production deployment guide for all Twinkle Protocol backend services.
+Production deployment guide for all Twinkle backend services.
 
 ## Prerequisites
 

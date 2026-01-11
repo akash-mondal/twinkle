@@ -1,5 +1,5 @@
 /**
- * Twinkle Protocol Demo Configuration
+ * Twinkle Demo Configuration
  * Contract addresses and service URLs for Sepolia testnet
  */
 

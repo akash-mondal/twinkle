@@ -95,7 +95,7 @@ contract FullIntegrationTest is Script {
         console.log("Total Tests:", testsPassed + testsFailed);
         if (testsFailed == 0) {
             console.log("\n  [SUCCESS] ALL TESTS PASSED!");
-            console.log("  Twinkle Protocol is verified on Sepolia!");
+            console.log("  Twinkle is verified on Sepolia!");
         } else {
             console.log("\n  [FAILED] SOME TESTS FAILED!");
         }

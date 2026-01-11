@@ -1,6 +1,6 @@
-# Twinkle Protocol Backend
+# Twinkle Backend
 
-Complete backend infrastructure for the Twinkle Protocol - a comprehensive payment system for AI agents and content monetization built on Ethereum.
+Complete backend infrastructure for the Twinkle - a comprehensive payment system for AI agents and content monetization built on Ethereum.
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ Complete backend infrastructure for the Twinkle Protocol - a comprehensive payme
 
 ## Overview
 
-The Twinkle Protocol backend provides:
+The Twinkle backend provides:
 
 - **Event Indexing**: Real-time blockchain event indexing with Ponder
 - **REST API**: Query indexed data for paywalls, payments, subscriptions, escrow, and splits
@@ -359,7 +359,7 @@ FACILITATOR_PRIVATE_KEY=0x... pnpm facilitator:dev
 
 ### MCP Server
 
-Model Context Protocol server enabling AI agents (Claude, GPT) to interact with Twinkle Protocol.
+Model Context Protocol server enabling AI agents (Claude, GPT) to interact with Twinkle.
 
 **Transport**: stdio (for Claude Desktop integration)
 

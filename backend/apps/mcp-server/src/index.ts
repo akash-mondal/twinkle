@@ -420,7 +420,7 @@ server.tool(
 
 server.resource(
   "twinkle://config",
-  "Twinkle Protocol configuration and contract addresses",
+  "Twinkle configuration and contract addresses",
   {
     mimeType: "application/json",
   },

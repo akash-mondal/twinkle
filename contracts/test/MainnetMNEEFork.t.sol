@@ -735,7 +735,7 @@ contract MainnetMNEEFork is Test {
         emit log_string("  - transferWithAuthorization() (EIP-3009): NOT AVAILABLE");
         emit log_string("  - permit() (EIP-2612): NOT AVAILABLE");
         emit log_string("");
-        emit log_string("Twinkle Protocol Status:");
+        emit log_string("Twinkle Status:");
         emit log_string("  - Uses standard ERC20 interface: YES");
         emit log_string("  - EIP-712 signatures for x402: YES (correct approach)");
         emit log_string("  - Blacklist handling: FIXED (uses _safeTransferWithFallback)");

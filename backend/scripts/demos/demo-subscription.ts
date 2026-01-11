@@ -25,7 +25,7 @@ import { api } from './lib/api.js';
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - Subscription Demo');
+  console.log('Twinkle - Subscription Demo');
   console.log('='.repeat(60));
   console.log(`Chain: Sepolia (${CONFIG.chainId})`);
   console.log(`TwinkleSubscription: ${CONFIG.contracts.TwinkleSubscription}\n`);

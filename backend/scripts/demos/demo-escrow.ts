@@ -21,7 +21,7 @@ import { api } from './lib/api.js';
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - Escrow/Project Demo');
+  console.log('Twinkle - Escrow/Project Demo');
   console.log('='.repeat(60));
   console.log(`Chain: Sepolia (${CONFIG.chainId})`);
   console.log(`TwinkleEscrow: ${CONFIG.contracts.TwinkleEscrow}\n`);

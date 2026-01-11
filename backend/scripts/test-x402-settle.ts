@@ -1,5 +1,5 @@
 /**
- * Twinkle Protocol - x402 Settlement Test Script
+ * Twinkle - x402 Settlement Test Script
  *
  * This script:
  * 1. Creates a payment request on TwinkleX402

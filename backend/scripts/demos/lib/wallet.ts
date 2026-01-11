@@ -1,5 +1,5 @@
 /**
- * Wallet utilities for Twinkle Protocol demos
+ * Wallet utilities for Twinkle demos
  * Provides viem wallet client setup and common operations
  */
 

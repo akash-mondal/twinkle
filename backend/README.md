@@ -1,6 +1,6 @@
-# Twinkle Protocol Backend
+# Twinkle Backend
 
-Event indexing, x402 facilitator, MCP server, and APIs for the Twinkle Protocol.
+Event indexing, x402 facilitator, MCP server, and APIs for the Twinkle.
 
 ## Architecture
 
@@ -46,7 +46,7 @@ pnpm dev
 
 ### Ponder Indexer (`apps/indexer`)
 
-Indexes all Twinkle Protocol events from Sepolia.
+Indexes all Twinkle events from Sepolia.
 
 ```bash
 # Development

@@ -123,7 +123,7 @@ async function settleWithFacilitator(
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - x402 AI Agent Payment Demo');
+  console.log('Twinkle - x402 AI Agent Payment Demo');
   console.log('='.repeat(60));
   console.log(`Chain: Sepolia (${CONFIG.chainId})`);
   console.log(`Facilitator: ${FACILITATOR_URL}`);

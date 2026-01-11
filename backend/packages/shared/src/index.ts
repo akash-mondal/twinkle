@@ -1,6 +1,6 @@
 /**
  * @twinkle/shared
- * Shared types, constants, and utilities for Twinkle Protocol
+ * Shared types, constants, and utilities for Twinkle
  */
 
 // Core exports

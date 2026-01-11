@@ -1,5 +1,5 @@
 /**
- * Twinkle Protocol Contract Addresses
+ * Twinkle Contract Addresses
  * Deployed on Sepolia Testnet
  */
 

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title TwinkleDefensive
- * @notice Shared defensive patterns for Twinkle Protocol contracts
+ * @notice Shared defensive patterns for Twinkle contracts
  * @dev Provides MNEE-safe transfer patterns, flash loan protection,
  *      rate limiting, and upgrade detection for TransparentUpgradeableProxy tokens
  *

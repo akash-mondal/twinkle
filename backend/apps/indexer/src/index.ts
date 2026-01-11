@@ -1,6 +1,6 @@
 /**
  * Ponder Indexer Entry Point
- * Imports all event handlers for the Twinkle Protocol
+ * Imports all event handlers for the Twinkle
  */
 
 // Import all event handlers

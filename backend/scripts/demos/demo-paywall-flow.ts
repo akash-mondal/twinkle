@@ -27,7 +27,7 @@ import { api } from './lib/api.js';
 
 async function main() {
   console.log('='.repeat(60));
-  console.log('Twinkle Protocol - Paywall Flow Demo');
+  console.log('Twinkle - Paywall Flow Demo');
   console.log('='.repeat(60));
   console.log(`Chain: Sepolia (${CONFIG.chainId})`);
   console.log(`TwinklePay: ${CONFIG.contracts.TwinklePay}\n`);

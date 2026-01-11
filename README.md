@@ -1,6 +1,6 @@
-# Twinkle Protocol
+# Twinkle
 
-A comprehensive payment infrastructure for AI agents and content monetization built on Ethereum, featuring the x402 payment protocol for machine-to-machine transactions.
+A payment platform for AI agents and content monetization built on Ethereum. Implements the [x402 payment protocol](https://x402.org) for machine-to-machine transactions using MNEE stablecoin.
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ A comprehensive payment infrastructure for AI agents and content monetization bu
 
 ## Overview
 
-Twinkle Protocol enables:
+Twinkle provides:
 
 - **AI Agent Payments**: Autonomous payments via the x402 HTTP payment protocol
 - **Content Paywalls**: One-time content unlocks with configurable pricing
@@ -736,7 +736,7 @@ X-PAYMENT: base64({
 
 ### MNEE Token
 
-MNEE is a stablecoin used for all payments in the Twinkle Protocol.
+MNEE is a stablecoin used for all payments in Twinkle.
 
 - **Mainnet**: `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`
 - **Testnet**: TestMNEE at `0xF730d47c3003eCaE2608C452BCD5b0edf825e51C`

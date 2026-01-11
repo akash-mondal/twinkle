@@ -1,6 +1,6 @@
-# Twinkle Protocol Demo Scripts
+# Twinkle Demo Scripts
 
-UI-less TypeScript scripts demonstrating all Twinkle Protocol features.
+UI-less TypeScript scripts demonstrating all Twinkle features.
 
 ## Prerequisites
 

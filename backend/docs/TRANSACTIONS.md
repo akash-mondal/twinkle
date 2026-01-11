@@ -1,6 +1,6 @@
 # Transaction Flows
 
-Detailed transaction flow documentation for Twinkle Protocol operations.
+Detailed transaction flow documentation for Twinkle operations.
 
 ## Overview
 
