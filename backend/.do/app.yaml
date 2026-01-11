@@ -69,6 +69,9 @@ services:
       - key: PONDER_RPC_URL_11155111
         scope: RUN_TIME
         type: SECRET
+      - key: RPC_URL
+        scope: RUN_TIME
+        type: SECRET
       - key: FACILITATOR_PRIVATE_KEY
         scope: RUN_TIME
         type: SECRET
@@ -103,9 +106,6 @@ workers:
         type: SECRET
 
 databases:
-  - name: twinkle-db
+  - name: db
     engine: PG
     production: false
-    cluster_name: twinkle-db
-    db_name: twinkle
-    db_user: twinkle
