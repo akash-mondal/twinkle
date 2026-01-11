@@ -28,12 +28,6 @@ services:
         value: info
       - key: DATABASE_URL
         value: ${db.DATABASE_URL}
-      - key: REDIS_URL
-        scope: RUN_TIME
-        type: SECRET
-      - key: PONDER_RPC_URL_11155111
-        scope: RUN_TIME
-        type: SECRET
 
   # x402 Facilitator
   - name: facilitator
@@ -61,18 +55,6 @@ services:
         value: "11155111"
       - key: DATABASE_URL
         value: ${db.DATABASE_URL}
-      - key: REDIS_URL
-        scope: RUN_TIME
-        type: SECRET
-      - key: PONDER_RPC_URL_11155111
-        scope: RUN_TIME
-        type: SECRET
-      - key: RPC_URL
-        scope: RUN_TIME
-        type: SECRET
-      - key: FACILITATOR_PRIVATE_KEY
-        scope: RUN_TIME
-        type: SECRET
 
 # Workers (no HTTP)
 workers:
@@ -98,9 +80,6 @@ workers:
         value: "10016000"
       - key: PONDER_DATABASE_URL
         value: ${db.DATABASE_URL}
-      - key: PONDER_RPC_URL_11155111
-        scope: RUN_TIME
-        type: SECRET
 
 databases:
   - name: db
