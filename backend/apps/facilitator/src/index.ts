@@ -544,9 +544,10 @@ logger.info(
 const server = serve({
   fetch: app.fetch,
   port,
+  hostname: "0.0.0.0",
 });
 
-logger.info({ url: `http://localhost:${port}` }, "x402 Facilitator running");
+logger.info({ url: `http://0.0.0.0:${port}` }, "x402 Facilitator running");
 
 // Graceful shutdown handler
 function gracefulShutdown(signal: string) {

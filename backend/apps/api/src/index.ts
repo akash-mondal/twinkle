@@ -205,9 +205,10 @@ logger.info(
 const server = serve({
   fetch: app.fetch,
   port,
+  hostname: "0.0.0.0",
 });
 
-logger.info({ url: `http://localhost:${port}` }, "Twinkle API running");
+logger.info({ url: `http://0.0.0.0:${port}` }, "Twinkle API running");
 
 // Log available endpoints (only in development)
 if (process.env.NODE_ENV !== "production") {
