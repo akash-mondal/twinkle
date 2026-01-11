@@ -27,8 +27,7 @@ services:
       - key: LOG_LEVEL
         value: info
       - key: DATABASE_URL
-        scope: RUN_TIME
-        type: SECRET
+        value: ${db.DATABASE_URL}
       - key: REDIS_URL
         scope: RUN_TIME
         type: SECRET
@@ -61,8 +60,7 @@ services:
       - key: CHAIN_ID
         value: "11155111"
       - key: DATABASE_URL
-        scope: RUN_TIME
-        type: SECRET
+        value: ${db.DATABASE_URL}
       - key: REDIS_URL
         scope: RUN_TIME
         type: SECRET
@@ -99,8 +97,7 @@ workers:
       - key: START_BLOCK
         value: "10016000"
       - key: PONDER_DATABASE_URL
-        scope: RUN_TIME
-        type: SECRET
+        value: ${db.DATABASE_URL}
       - key: PONDER_RPC_URL_11155111
         scope: RUN_TIME
         type: SECRET
