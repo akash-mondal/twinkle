@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# Environment files (use .env.example as template)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Ponder/Indexer generated files
+apps/indexer/generated/
+apps/indexer/.ponder/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Database files (local development)
+*.sqlite
+*.db
+
+# Docker volumes
+data/
+
+# Test artifacts
+scripts/test-ids.env

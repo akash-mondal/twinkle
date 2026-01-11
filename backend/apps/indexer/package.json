@@ -1,0 +1,23 @@
+{
+  "name": "@twinkle/indexer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ponder indexer for Twinkle Protocol events",
+  "type": "module",
+  "scripts": {
+    "dev": "ponder dev",
+    "start": "ponder start",
+    "codegen": "ponder codegen",
+    "serve": "ponder serve",
+    "build": "tsc --noEmit",
+    "clean": "rm -rf .ponder"
+  },
+  "dependencies": {
+    "hono": "^4.5.0",
+    "ponder": "^0.8.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

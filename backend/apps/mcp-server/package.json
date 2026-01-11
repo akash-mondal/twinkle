@@ -1,0 +1,30 @@
+{
+  "name": "@twinkle/mcp-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MCP Server for Twinkle Protocol - AI Agent Payment Tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "twinkle-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@twinkle/shared": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "viem": "^2.21.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.19.0",
+    "tsup": "^8.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

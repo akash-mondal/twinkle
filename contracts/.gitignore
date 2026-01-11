@@ -1,0 +1,32 @@
+# Compiler output
+out/
+cache/
+
+# Broadcast logs (deployment records)
+broadcast/
+
+# Environment files (use .env.example as template)
+.env
+.env.local
+
+# Dependencies (installed via forge)
+lib/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Local testing artifacts
+lcov.info

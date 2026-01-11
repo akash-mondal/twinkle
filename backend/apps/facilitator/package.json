@@ -1,0 +1,28 @@
+{
+  "name": "@twinkle/facilitator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "x402 Facilitator for Twinkle Protocol - EIP-712 verification and settlement",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@twinkle/shared": "workspace:*",
+    "viem": "^2.21.0",
+    "hono": "^4.6.0",
+    "@hono/node-server": "^1.13.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.19.0",
+    "tsup": "^8.0.0",
+    "@types/node": "^20.0.0"
+  }
+}
