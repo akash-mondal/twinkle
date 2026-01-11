@@ -1,0 +1,32 @@
+# Twinkle Backend - Caddy Configuration
+# Set DOMAIN env var for production, defaults to :80 for local
+
+{$DOMAIN::80} {
+    # API routes
+    handle /api/* {
+        reverse_proxy api:8080
+    }
+
+    # Facilitator routes
+    handle /facilitator/* {
+        reverse_proxy facilitator:8080
+    }
+
+    # Health check at root
+    handle / {
+        respond "Twinkle Backend OK" 200
+    }
+
+    # Security headers
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+}

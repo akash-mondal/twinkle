@@ -1,0 +1,139 @@
+services:
+  # Reverse proxy with automatic SSL
+  caddy:
+    image: caddy:2-alpine
+    container_name: twinkle-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - facilitator
+    networks:
+      - twinkle
+
+  # PostgreSQL
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: twinkle-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-twinkle}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-twinkle}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-twinkle} -d ${POSTGRES_DB:-twinkle}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - twinkle
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: twinkle-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - twinkle
+
+  # Ponder Indexer
+  indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: indexer
+    container_name: twinkle-indexer
+    restart: unless-stopped
+    environment:
+      SERVICE: indexer
+      NODE_ENV: production
+      LOG_LEVEL: info
+      CHAIN_ID: "11155111"
+      START_BLOCK: ${START_BLOCK:-10016000}
+      PONDER_RPC_URL_11155111: ${PONDER_RPC_URL_11155111}
+      PONDER_DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
+      DATABASE_SCHEMA: ponder
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - twinkle
+
+  # REST API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: api
+    container_name: twinkle-api
+    restart: unless-stopped
+    environment:
+      SERVICE: api
+      NODE_ENV: production
+      LOG_LEVEL: info
+      API_PORT: "8080"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - twinkle
+
+  # x402 Facilitator
+  facilitator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: facilitator
+    container_name: twinkle-facilitator
+    restart: unless-stopped
+    environment:
+      SERVICE: facilitator
+      NODE_ENV: production
+      LOG_LEVEL: info
+      FACILITATOR_PORT: "8080"
+      CHAIN_ID: "11155111"
+      RPC_URL: ${RPC_URL}
+      FACILITATOR_PRIVATE_KEY: ${FACILITATOR_PRIVATE_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - twinkle
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  twinkle:
+    name: twinkle-network
