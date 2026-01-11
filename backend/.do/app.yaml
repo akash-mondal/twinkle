@@ -42,7 +42,7 @@ services:
       - key: LOG_LEVEL
         value: info
       - key: DATABASE_URL
-        value: ${db.DATABASE_URL}
+        value: ${db.DATABASE_URL}?options=-csearch_path%3Dponder
 
   # x402 Facilitator
   - name: facilitator
