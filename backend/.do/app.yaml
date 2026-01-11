@@ -3,6 +3,21 @@ region: nyc
 features:
   - buildpack-stack=ubuntu-22
 
+# App-level environment variables (inherited by all components)
+envs:
+  - key: REDIS_URL
+    scope: RUN_TIME
+    type: SECRET
+  - key: RPC_URL
+    scope: RUN_TIME
+    type: SECRET
+  - key: PONDER_RPC_URL_11155111
+    scope: RUN_TIME
+    type: SECRET
+  - key: FACILITATOR_PRIVATE_KEY
+    scope: RUN_TIME
+    type: SECRET
+
 services:
   # REST API
   - name: api
