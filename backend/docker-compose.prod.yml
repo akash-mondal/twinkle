@@ -69,7 +69,7 @@ services:
       CHAIN_ID: "11155111"
       START_BLOCK: ${START_BLOCK:-10016000}
       PONDER_RPC_URL_11155111: ${PONDER_RPC_URL_11155111}
-      PONDER_DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
       DATABASE_SCHEMA: ponder
     depends_on:
       postgres:

@@ -2,13 +2,13 @@
 # Set DOMAIN env var for production, defaults to :80 for local
 
 {$DOMAIN::80} {
-    # API routes
-    handle /api/* {
+    # API routes - strip /api prefix before forwarding
+    handle_path /api/* {
         reverse_proxy api:8080
     }
 
-    # Facilitator routes
-    handle /facilitator/* {
+    # Facilitator routes - strip /facilitator prefix before forwarding
+    handle_path /facilitator/* {
         reverse_proxy facilitator:8080
     }
 
