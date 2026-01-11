@@ -710,6 +710,19 @@ X-PAYMENT: base64({
 
 ## Contract Addresses
 
+### Ethereum Mainnet (Chain ID: 1)
+
+| Contract | Address |
+|----------|---------|
+| TwinkleCore | `0x1ca179Ef926bECa70680F7a7E4C12bF3D0Deb92c` |
+| TwinklePay | `0xb06A5210F981241467383B25D02983C19263D519` |
+| TwinkleX402 | `0x7BF61F6325E9e8DceB710aeDb817004d71908957` |
+| TwinkleSubscription | `0x5801a405f42A86d66d17df7662911da89e8b0A08` |
+| TwinkleEscrow | `0xF730d47c3003eCaE2608C452BCD5b0edf825e51C` |
+| TwinkleSplit | `0x6dde461dd5DA6D458394364915bF9d519445644C` |
+| MNEE Token | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` |
+| Sablier V3 Lockup | `0xcF8ce57fa442ba50aCbC57147a62aD03873FfA73` |
+
 ### Sepolia Testnet (Chain ID: 11155111)
 
 | Contract | Address |
@@ -720,15 +733,22 @@ X-PAYMENT: base64({
 | TwinkleSubscription | `0xa4436C50743FF1eD0C38318A32F502b2A5F899E6` |
 | TwinkleEscrow | `0xa04CE96fccBB6C08eA930dB97B8479F33F8f5931` |
 | TwinkleSplit | `0x987c621118D66A1F58C032EBdDe8F4f3385B71E4` |
-| TestMNEE (Proxy) | `0xF730d47c3003eCaE2608C452BCD5b0edf825e51C` |
-| Sablier Lockup | `0x6b0307b4338f2963A62106028E3B074C2c0510DA` |
+| TestMNEE | `0xF730d47c3003eCaE2608C452BCD5b0edf825e51C` |
+| Sablier V3 Lockup | `0x6b0307b4338f2963A62106028E3B074C2c0510DA` |
 
-### Ethereum Mainnet
+### Getting TestMNEE (Sepolia)
 
-| Contract | Address |
-|----------|---------|
-| MNEE Token | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` |
-| Sablier Lockup | `0x3962f6585946823440d274aD7C719B02b49DE51E` |
+TestMNEE is a test token for development. Mint tokens using:
+
+```bash
+# Mint 1000 TestMNEE (18 decimals)
+cast send 0xF730d47c3003eCaE2608C452BCD5b0edf825e51C \
+  "mint(address,uint256)" \
+  YOUR_ADDRESS \
+  1000000000000000000000 \
+  --rpc-url https://ethereum-sepolia.publicnode.com \
+  --private-key YOUR_PRIVATE_KEY
+```
 
 ---
 
@@ -745,8 +765,8 @@ MNEE is a stablecoin used for all payments in Twinkle.
 
 Used for streaming payments in escrow contracts.
 
+- **Mainnet**: `0xcF8ce57fa442ba50aCbC57147a62aD03873FfA73`
 - **Sepolia**: `0x6b0307b4338f2963A62106028E3B074C2c0510DA`
-- **Mainnet**: `0x3962f6585946823440d274aD7C719B02b49DE51E`
 
 ---
 
