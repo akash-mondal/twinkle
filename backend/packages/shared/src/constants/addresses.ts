@@ -1,11 +1,11 @@
 /**
  * Twinkle Contract Addresses
- * Deployed on Sepolia Testnet
+ * Deployed on Ethereum Mainnet and Sepolia Testnet
  */
 
 export const CHAIN_IDS = {
+  MAINNET: 1,
   SEPOLIA: 11155111,
-  MAINNET: 1, // Future deployment
 } as const;
 
 export type ChainId = (typeof CHAIN_IDS)[keyof typeof CHAIN_IDS];
@@ -14,6 +14,16 @@ export type ChainId = (typeof CHAIN_IDS)[keyof typeof CHAIN_IDS];
  * Contract addresses per chain
  */
 export const CONTRACTS = {
+  [CHAIN_IDS.MAINNET]: {
+    TwinkleCore: '0x1ca179Ef926bECa70680F7a7E4C12bF3D0Deb92c',
+    TwinklePay: '0xb06A5210F981241467383B25D02983C19263D519',
+    TwinkleSplit: '0x6dde461dd5DA6D458394364915bF9d519445644C',
+    TwinkleEscrow: '0xF730d47c3003eCaE2608C452BCD5b0edf825e51C',
+    TwinkleSubscription: '0x5801a405f42A86d66d17df7662911da89e8b0A08',
+    TwinkleX402: '0x7BF61F6325E9e8DceB710aeDb817004d71908957',
+    MNEE: '0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF',
+    SablierLockup: '0xcF8ce57fa442ba50aCbC57147a62aD03873FfA73',
+  },
   [CHAIN_IDS.SEPOLIA]: {
     TwinkleCore: '0x0DF0E3024350ea0992a7485aDbDE425a79983c09',
     TwinklePay: '0xAE1a483ce67a796FcdC7C986CbB556f2975bE190',
@@ -30,6 +40,7 @@ export const CONTRACTS = {
  * Deployment start blocks per chain
  */
 export const START_BLOCKS = {
+  [CHAIN_IDS.MAINNET]: 24213265,
   [CHAIN_IDS.SEPOLIA]: 10016000,
 } as const;
 
@@ -61,6 +72,26 @@ export function getStartBlock(chainId: SupportedChainId): number {
 }
 
 /**
+ * Mainnet contract addresses (convenience export)
+ */
+export const MAINNET_CONTRACTS = CONTRACTS[CHAIN_IDS.MAINNET];
+
+/**
  * Sepolia contract addresses (convenience export)
  */
 export const SEPOLIA_CONTRACTS = CONTRACTS[CHAIN_IDS.SEPOLIA];
+
+/**
+ * Get the current chain ID from environment (defaults to mainnet)
+ */
+export function getCurrentChainId(): number {
+  return parseInt(process.env.CHAIN_ID || '1', 10);
+}
+
+/**
+ * Get contracts for current chain (from CHAIN_ID env var)
+ */
+export function getCurrentContracts() {
+  const chainId = getCurrentChainId();
+  return getContracts(chainId as SupportedChainId);
+}

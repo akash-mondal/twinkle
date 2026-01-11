@@ -3,17 +3,17 @@
  * Must match TwinkleX402.sol exactly
  */
 
-import { CONTRACTS, CHAIN_IDS } from './addresses.js';
+import { CONTRACTS, CHAIN_IDS, getCurrentChainId, type SupportedChainId } from './addresses.js';
 
 /**
- * EIP-712 Domain for TwinkleX402
+ * EIP-712 Domain for TwinkleX402 (Mainnet - default)
  * CRITICAL: Must match contract exactly
  */
 export const X402_DOMAIN = {
   name: 'TwinkleX402',
   version: '2',
-  chainId: BigInt(CHAIN_IDS.SEPOLIA),
-  verifyingContract: CONTRACTS[CHAIN_IDS.SEPOLIA].TwinkleX402 as `0x${string}`,
+  chainId: BigInt(CHAIN_IDS.MAINNET),
+  verifyingContract: CONTRACTS[CHAIN_IDS.MAINNET].TwinkleX402 as `0x${string}`,
 } as const;
 
 /**
@@ -41,13 +41,21 @@ export const PAYMENT_INTENT_TYPEHASH =
  * Get domain for a specific chain
  */
 export function getX402Domain(chainId: number) {
-  if (chainId !== CHAIN_IDS.SEPOLIA) {
-    throw new Error(`X402 domain not configured for chain ${chainId}`);
+  const contracts = CONTRACTS[chainId as SupportedChainId];
+  if (!contracts) {
+    throw new Error(`X402 domain not configured for chain ${chainId}. Supported: mainnet (1), sepolia (11155111)`);
   }
   return {
     name: 'TwinkleX402',
     version: '2',
     chainId: BigInt(chainId),
-    verifyingContract: CONTRACTS[chainId].TwinkleX402 as `0x${string}`,
+    verifyingContract: contracts.TwinkleX402 as `0x${string}`,
   };
+}
+
+/**
+ * Get domain for current chain (from CHAIN_ID env var)
+ */
+export function getCurrentX402Domain() {
+  return getX402Domain(getCurrentChainId());
 }

@@ -8,14 +8,12 @@ export const CONFIG = {
   chainId: 11155111,
   chainName: 'Sepolia',
 
-  // RPC URL - Set via environment variable
-  rpcUrl: process.env.RPC_URL || (() => {
-    throw new Error('RPC_URL environment variable is required');
-  })(),
+  // RPC URL - Required for on-chain transactions
+  rpcUrl: process.env.RPC_URL || 'https://ethereum-sepolia.publicnode.com',
 
-  // Service URLs
-  apiUrl: process.env.API_URL || 'http://localhost:3000',
-  facilitatorUrl: process.env.FACILITATOR_URL || 'http://localhost:3001',
+  // Service URLs - Default to deployed VPS
+  apiUrl: process.env.API_URL || 'http://159.89.160.130/api',
+  facilitatorUrl: process.env.FACILITATOR_URL || 'http://159.89.160.130/facilitator',
   mcpServerUrl: process.env.MCP_SERVER_URL || 'http://localhost:3002',
 
   // Contract addresses (Sepolia V5.1)
@@ -30,10 +28,8 @@ export const CONFIG = {
     SablierLockup: '0x6b0307b4338f2963A62106028E3B074C2c0510DA' as `0x${string}`,
   },
 
-  // Test wallet - Set via environment variable
-  testPrivateKey: process.env.TEST_PRIVATE_KEY || (() => {
-    throw new Error('TEST_PRIVATE_KEY environment variable is required');
-  })(),
+  // Test wallet - Required for on-chain transactions
+  testPrivateKey: process.env.TEST_PRIVATE_KEY || '0xec0838b3e14efa09c8af7a940b24c6d50117c705848b7217c49f9bf3b20b12d4',
 
   // Default settings
   defaults: {
