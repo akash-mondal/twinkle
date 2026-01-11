@@ -95,6 +95,8 @@ workers:
         value: "10016000"
       - key: PONDER_DATABASE_URL
         value: ${db.DATABASE_URL}
+      - key: DATABASE_SCHEMA
+        value: ponder
 
 databases:
   - name: db
