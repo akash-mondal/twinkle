@@ -10,7 +10,7 @@ import "../src/twinkle/TwinkleSubscription.sol";
 
 contract DeployTwinkle is Script {
     // Sepolia addresses
-    address constant TESTMNEE_PROXY = 0xF730d47c3003eCaE2608C452BCD5b0edf825e51C;
+    address constant TESTMNEE_PROXY = 0xDEe5671FcFC26207295E4352E8bDf6785519e4EF;
     // Correct Sablier V3 Lockup address on Sepolia (verified from docs.sablier.com)
     address constant SABLIER_LOCKUP = 0x6b0307b4338f2963A62106028E3B074C2c0510DA;
 

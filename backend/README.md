@@ -160,17 +160,30 @@ cd apps/api && pnpm start
 | `GET /analytics/overview` | Protocol overview stats |
 | `GET /analytics/daily` | Daily stats |
 
+## Contract Addresses (Mainnet)
+
+| Contract | Address |
+|----------|---------|
+| TwinkleCore | `0x68Ab986EBd3A3307E04b0384fB483e528D16D013` |
+| TwinklePay | `0xa3DB430aFD3e92b4991842A3D167E8487E9a8bFF` |
+| TwinkleSplit | `0xDEe5671FcFC26207295E4352E8bDf6785519e4EF` |
+| TwinkleEscrow | `0x19AF229901db0ae11fafc536606b592a3524e28d` |
+| TwinkleSubscription | `0x902E0D39D872b3CD1f7d82bb4Ee8beBd7b045Ff8` |
+| TwinkleX402 | `0x348356f71539CCc13695a4868541B9bC18764A0F` |
+| MNEE | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` |
+| SablierLockup | `0xcF8ce57fa442ba50aCbC57147a62aD03873FfA73` |
+
 ## Contract Addresses (Sepolia)
 
 | Contract | Address |
 |----------|---------|
-| TwinkleCore | `0x0DF0E3024350ea0992a7485aDbDE425a79983c09` |
-| TwinklePay | `0xAE1a483ce67a796FcdC7C986CbB556f2975bE190` |
-| TwinkleSplit | `0x987c621118D66A1F58C032EBdDe8F4f3385B71E4` |
-| TwinkleEscrow | `0xa04CE96fccBB6C08eA930dB97B8479F33F8f5931` |
-| TwinkleSubscription | `0xa4436C50743FF1eD0C38318A32F502b2A5F899E6` |
-| TwinkleX402 | `0x1E23bfd3A09cbC1b14Eab392068C6eB9217730C3` |
-| TestMNEE | `0xF730d47c3003eCaE2608C452BCD5b0edf825e51C` |
+| TwinkleCore | `0x902E0D39D872b3CD1f7d82bb4Ee8beBd7b045Ff8` |
+| TwinklePay | `0x348356f71539CCc13695a4868541B9bC18764A0F` |
+| TwinkleSplit | `0xdF74B5bAf4F9F85AdE8dFc8F19D5cF47F3b14aA2` |
+| TwinkleEscrow | `0x57526eBA750E9E216955f7Ea89917c759169016c` |
+| TwinkleSubscription | `0x8ABb57F7a5d74C0B54aF030A7988a5dD18fC4907` |
+| TwinkleX402 | `0x1EDc124D1608Cca16F7B27B4027EFaF40AE3BC62` |
+| TestMNEE | `0xDEe5671FcFC26207295E4352E8bDf6785519e4EF` |
 | SablierLockup | `0x6b0307b4338f2963A62106028E3B074C2c0510DA` |
 
 ## Environment Variables
