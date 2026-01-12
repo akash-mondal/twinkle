@@ -1,20 +1,53 @@
 # Twinkle Backend - Caddy Configuration
+# Dual-chain support: Mainnet (1) and Sepolia (11155111)
 # Set DOMAIN env var for production, defaults to :80 for local
 
 {$DOMAIN::80} {
-    # API routes - strip /api prefix before forwarding
-    handle_path /api/* {
-        reverse_proxy api:8080
+    # ==========================================================================
+    # API Routes
+    # ==========================================================================
+
+    # Mainnet API - /api/1/*
+    handle_path /api/1/* {
+        reverse_proxy api-mainnet:8080
     }
 
-    # Facilitator routes - strip /facilitator prefix before forwarding
-    handle_path /facilitator/* {
-        reverse_proxy facilitator:8080
+    # Sepolia API - /api/11155111/*
+    handle_path /api/11155111/* {
+        reverse_proxy api-sepolia:8080
     }
+
+    # Default API (mainnet) - /api/* for backwards compatibility
+    handle_path /api/* {
+        reverse_proxy api-mainnet:8080
+    }
+
+    # ==========================================================================
+    # Facilitator Routes
+    # ==========================================================================
+
+    # Mainnet Facilitator - /facilitator/1/*
+    handle_path /facilitator/1/* {
+        reverse_proxy facilitator-mainnet:8080
+    }
+
+    # Sepolia Facilitator - /facilitator/11155111/*
+    handle_path /facilitator/11155111/* {
+        reverse_proxy facilitator-sepolia:8080
+    }
+
+    # Default Facilitator (mainnet) - /facilitator/* for backwards compatibility
+    handle_path /facilitator/* {
+        reverse_proxy facilitator-mainnet:8080
+    }
+
+    # ==========================================================================
+    # Health & Info
+    # ==========================================================================
 
     # Health check at root
     handle / {
-        respond "Twinkle Backend OK" 200
+        respond `{"status":"ok","chains":{"mainnet":"/api/1","sepolia":"/api/11155111"}}` 200
     }
 
     # Security headers

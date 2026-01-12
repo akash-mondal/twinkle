@@ -12,8 +12,10 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      - api
-      - facilitator
+      - api-mainnet
+      - api-sepolia
+      - facilitator-mainnet
+      - facilitator-sepolia
     networks:
       - twinkle
 
@@ -53,46 +55,50 @@ services:
     networks:
       - twinkle
 
-  # Ponder Indexer
-  indexer:
+  # =============================================================================
+  # MAINNET (Chain ID: 1)
+  # =============================================================================
+
+  # Ponder Indexer - Mainnet
+  indexer-mainnet:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         SERVICE: indexer
-    container_name: twinkle-indexer
+    container_name: twinkle-indexer-mainnet
     restart: unless-stopped
     environment:
       SERVICE: indexer
       NODE_ENV: production
       LOG_LEVEL: info
-      CHAIN_ID: ${CHAIN_ID:-1}
-      START_BLOCK: ${START_BLOCK:-24213265}
-      RPC_URL: ${RPC_URL}
+      CHAIN_ID: "1"
+      START_BLOCK: ${START_BLOCK_MAINNET:-24213265}
+      RPC_URL: ${RPC_URL_MAINNET:-https://ethereum.publicnode.com}
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
-      DATABASE_SCHEMA: ponder
+      DATABASE_SCHEMA: ponder_mainnet
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - twinkle
 
-  # REST API
-  api:
+  # REST API - Mainnet
+  api-mainnet:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         SERVICE: api
-    container_name: twinkle-api
+    container_name: twinkle-api-mainnet
     restart: unless-stopped
     environment:
       SERVICE: api
       NODE_ENV: production
       LOG_LEVEL: info
       API_PORT: "8080"
-      CHAIN_ID: ${CHAIN_ID:-1}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder
+      CHAIN_ID: "1"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder_mainnet
       REDIS_URL: redis://redis:6379
     depends_on:
       postgres:
@@ -102,22 +108,102 @@ services:
     networks:
       - twinkle
 
-  # x402 Facilitator
-  facilitator:
+  # x402 Facilitator - Mainnet
+  facilitator-mainnet:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         SERVICE: facilitator
-    container_name: twinkle-facilitator
+    container_name: twinkle-facilitator-mainnet
     restart: unless-stopped
     environment:
       SERVICE: facilitator
       NODE_ENV: production
       LOG_LEVEL: info
       FACILITATOR_PORT: "8080"
-      CHAIN_ID: ${CHAIN_ID:-1}
-      RPC_URL: ${RPC_URL}
+      CHAIN_ID: "1"
+      RPC_URL: ${RPC_URL_MAINNET:-https://ethereum.publicnode.com}
+      FACILITATOR_PRIVATE_KEY: ${FACILITATOR_PRIVATE_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - twinkle
+
+  # =============================================================================
+  # SEPOLIA TESTNET (Chain ID: 11155111)
+  # =============================================================================
+
+  # Ponder Indexer - Sepolia
+  indexer-sepolia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: indexer
+    container_name: twinkle-indexer-sepolia
+    restart: unless-stopped
+    environment:
+      SERVICE: indexer
+      NODE_ENV: production
+      LOG_LEVEL: info
+      CHAIN_ID: "11155111"
+      START_BLOCK: ${START_BLOCK_SEPOLIA:-10016000}
+      RPC_URL: ${RPC_URL_SEPOLIA:-https://ethereum-sepolia.publicnode.com}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
+      DATABASE_SCHEMA: ponder_sepolia
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - twinkle
+
+  # REST API - Sepolia
+  api-sepolia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: api
+    container_name: twinkle-api-sepolia
+    restart: unless-stopped
+    environment:
+      SERVICE: api
+      NODE_ENV: production
+      LOG_LEVEL: info
+      API_PORT: "8080"
+      CHAIN_ID: "11155111"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder_sepolia
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - twinkle
+
+  # x402 Facilitator - Sepolia
+  facilitator-sepolia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: facilitator
+    container_name: twinkle-facilitator-sepolia
+    restart: unless-stopped
+    environment:
+      SERVICE: facilitator
+      NODE_ENV: production
+      LOG_LEVEL: info
+      FACILITATOR_PORT: "8080"
+      CHAIN_ID: "11155111"
+      RPC_URL: ${RPC_URL_SEPOLIA:-https://ethereum-sepolia.publicnode.com}
       FACILITATOR_PRIVATE_KEY: ${FACILITATOR_PRIVATE_KEY}
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
       REDIS_URL: redis://redis:6379
