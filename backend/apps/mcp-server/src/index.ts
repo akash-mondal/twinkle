@@ -35,8 +35,15 @@ import {
   getSubscriptionSchema,
 } from "./tools/index.js";
 
-import { SEPOLIA_CONTRACTS, CHAIN_IDS } from "@twinkle/shared/constants";
+import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
 import { createLogger, initSentry, captureError } from "@twinkle/shared";
+
+// Get chain configuration
+const chainId = getCurrentChainId();
+const contracts = getContracts(chainId as SupportedChainId);
+const networkName = chainId === 1 ? 'mainnet' : 'sepolia';
+const mneeAddress = chainId === 1 ? contracts.MNEE : contracts.TestMNEE;
+const mneeSymbol = chainId === 1 ? 'MNEE' : 'tMNEE';
 
 // Initialize Sentry for error tracking
 initSentry({ serviceName: "mcp-server" });
@@ -432,12 +439,12 @@ server.resource(
           mimeType: "application/json",
           text: JSON.stringify(
             {
-              chainId: CHAIN_IDS.SEPOLIA,
-              network: "sepolia",
-              contracts: SEPOLIA_CONTRACTS,
+              chainId,
+              network: networkName,
+              contracts,
               token: {
-                address: SEPOLIA_CONTRACTS.TestMNEE,
-                symbol: "tMNEE",
+                address: mneeAddress,
+                symbol: mneeSymbol,
                 decimals: 18,
               },
             },
@@ -460,7 +467,7 @@ async function main() {
 
   // Log to stderr (MCP uses stdout for communication)
   logger.info(
-    { chainId: CHAIN_IDS.SEPOLIA, mneeToken: SEPOLIA_CONTRACTS.TestMNEE },
+    { chainId, network: networkName, mneeToken: mneeAddress },
     "Twinkle MCP Server started"
   );
 }

@@ -66,9 +66,9 @@ services:
       SERVICE: indexer
       NODE_ENV: production
       LOG_LEVEL: info
-      CHAIN_ID: "11155111"
-      START_BLOCK: ${START_BLOCK:-10016000}
-      PONDER_RPC_URL_11155111: ${PONDER_RPC_URL_11155111}
+      CHAIN_ID: ${CHAIN_ID:-1}
+      START_BLOCK: ${START_BLOCK:-24213265}
+      RPC_URL: ${RPC_URL}
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}
       DATABASE_SCHEMA: ponder
     depends_on:
@@ -91,6 +91,7 @@ services:
       NODE_ENV: production
       LOG_LEVEL: info
       API_PORT: "8080"
+      CHAIN_ID: ${CHAIN_ID:-1}
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder
       REDIS_URL: redis://redis:6379
     depends_on:
@@ -115,7 +116,7 @@ services:
       NODE_ENV: production
       LOG_LEVEL: info
       FACILITATOR_PORT: "8080"
-      CHAIN_ID: "11155111"
+      CHAIN_ID: ${CHAIN_ID:-1}
       RPC_URL: ${RPC_URL}
       FACILITATOR_PRIVATE_KEY: ${FACILITATOR_PRIVATE_KEY}
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}

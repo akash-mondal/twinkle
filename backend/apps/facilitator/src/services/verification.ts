@@ -5,24 +5,21 @@
 
 import {
   createPublicClient,
-  createWalletClient,
   http,
   type PublicClient,
-  type WalletClient,
   type Chain,
 } from "viem";
-import { sepolia } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
 
 import {
   verifyPaymentIntentSignature,
   recoverPaymentIntentSigner,
+  getChainById,
   type PaymentIntent,
 } from "@twinkle/shared";
 import {
-  SEPOLIA_CONTRACTS,
-  CHAIN_IDS,
-  getX402Domain,
+  getContracts,
+  getCurrentChainId,
+  type SupportedChainId,
 } from "@twinkle/shared/constants";
 
 export interface VerificationResult {
@@ -60,11 +57,18 @@ export interface PaymentRequirements {
 export class VerificationService {
   private publicClient: PublicClient;
   private chainId: number;
+  private mneeAddress: `0x${string}`;
 
-  constructor(rpcUrl: string, chainId: number = CHAIN_IDS.SEPOLIA) {
-    this.chainId = chainId;
+  constructor(rpcUrl: string, chainId?: number) {
+    this.chainId = chainId ?? getCurrentChainId();
+    const chain = getChainById(this.chainId);
+    const contracts = getContracts(this.chainId as SupportedChainId);
+
+    // Get MNEE address (TestMNEE for testnet, MNEE for mainnet)
+    this.mneeAddress = (this.chainId === 1 ? contracts.MNEE : contracts.TestMNEE) as `0x${string}`;
+
     this.publicClient = createPublicClient({
-      chain: sepolia,
+      chain,
       transport: http(rpcUrl),
     });
   }
@@ -144,7 +148,7 @@ export class VerificationService {
     // Validate asset is MNEE
     if (
       requirements.asset.toLowerCase() !==
-      SEPOLIA_CONTRACTS.TestMNEE.toLowerCase()
+      this.mneeAddress.toLowerCase()
     ) {
       return { valid: false, reason: "Asset must be MNEE token" };
     }
@@ -177,10 +181,11 @@ export class VerificationService {
  * Create verification service from environment
  */
 export function createVerificationService(): VerificationService {
-  const rpcUrl = process.env.RPC_URL || process.env.PONDER_RPC_URL_11155111;
+  const chainId = getCurrentChainId();
+  const rpcUrl = process.env.RPC_URL || process.env[`PONDER_RPC_URL_${chainId}`];
   if (!rpcUrl) {
-    throw new Error("RPC_URL or PONDER_RPC_URL_11155111 environment variable required");
+    throw new Error(`RPC_URL or PONDER_RPC_URL_${chainId} environment variable required`);
   }
 
-  return new VerificationService(rpcUrl);
+  return new VerificationService(rpcUrl, chainId);
 }

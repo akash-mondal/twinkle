@@ -7,9 +7,15 @@
 import { z } from "zod";
 import { formatUnits, parseUnits, type Address } from "viem";
 
-import { SEPOLIA_CONTRACTS, CHAIN_IDS } from "@twinkle/shared/constants";
+import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
 import { TwinklePayAbi, TwinkleX402Abi } from "@twinkle/shared/abis";
-import { createFallbackPublicClient, createLogger } from "@twinkle/shared";
+import { createFallbackPublicClient, getChainById, createLogger } from "@twinkle/shared";
+
+// Get chain configuration
+const chainId = getCurrentChainId();
+const chain = getChainById(chainId);
+const contracts = getContracts(chainId as SupportedChainId);
+const mneeAddress = (chainId === 1 ? contracts.MNEE : contracts.TestMNEE) as Address;
 
 // Create logger for payment tools (logs to stderr for MCP compatibility)
 const logger = createLogger({
@@ -97,8 +103,8 @@ let _client: ReturnType<typeof createFallbackPublicClient> | null = null;
 
 function getClient() {
   if (!_client) {
-    logger.debug("Creating RPC fallback client");
-    _client = createFallbackPublicClient();
+    logger.debug({ chainId, network: chainId === 1 ? 'mainnet' : 'sepolia' }, "Creating RPC fallback client");
+    _client = createFallbackPublicClient({ chain });
   }
   return _client;
 }
@@ -115,18 +121,18 @@ export async function checkBalance(
 
   const [balance, symbol, decimals] = await Promise.all([
     client.readContract({
-      address: SEPOLIA_CONTRACTS.TestMNEE as Address,
+      address: mneeAddress,
       abi: MNEE_ABI,
       functionName: "balanceOf",
       args: [address as Address],
     }),
     client.readContract({
-      address: SEPOLIA_CONTRACTS.TestMNEE as Address,
+      address: mneeAddress,
       abi: MNEE_ABI,
       functionName: "symbol",
     }),
     client.readContract({
-      address: SEPOLIA_CONTRACTS.TestMNEE as Address,
+      address: mneeAddress,
       abi: MNEE_ABI,
       functionName: "decimals",
     }),
@@ -160,7 +166,7 @@ export async function getPaywall(paywallId: string): Promise<{
   logger.debug({ paywallId }, "Getting paywall details");
 
   const result = await client.readContract({
-    address: SEPOLIA_CONTRACTS.TwinklePay as Address,
+    address: contracts.TwinklePay as Address,
     abi: TwinklePayAbi,
     functionName: "getPaywall",
     args: [paywallId as `0x${string}`],
@@ -201,7 +207,7 @@ export async function checkUnlock(
   logger.debug({ paywallId, userAddress }, "Checking unlock status");
 
   const unlocked = await client.readContract({
-    address: SEPOLIA_CONTRACTS.TwinklePay as Address,
+    address: contracts.TwinklePay as Address,
     abi: TwinklePayAbi,
     functionName: "isUnlocked",
     args: [paywallId as `0x${string}`, userAddress as Address],
@@ -268,8 +274,8 @@ export async function createPaymentIntent(
   const domain = {
     name: "TwinkleX402",
     version: "2",
-    chainId: CHAIN_IDS.SEPOLIA,
-    verifyingContract: SEPOLIA_CONTRACTS.TwinkleX402,
+    chainId,
+    verifyingContract: contracts.TwinkleX402,
   };
 
   const types = {
@@ -309,7 +315,7 @@ export async function getPaymentRequest(requestId: string): Promise<{
 
   try {
     const result = await client.readContract({
-      address: SEPOLIA_CONTRACTS.TwinkleX402 as Address,
+      address: contracts.TwinkleX402 as Address,
       abi: TwinkleX402Abi,
       functionName: "getPaymentRequest",
       args: [requestId as `0x${string}`],

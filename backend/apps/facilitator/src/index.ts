@@ -17,11 +17,12 @@ import {
   type PaymentRequirements,
 } from "./services/index.js";
 import type { PaymentIntent } from "@twinkle/shared";
-import { SEPOLIA_CONTRACTS, CHAIN_IDS } from "@twinkle/shared/constants";
+import { getContracts, getCurrentChainId, CHAIN_IDS, type SupportedChainId } from "@twinkle/shared/constants";
 import {
   createRedisClient,
   createLogger,
   createFallbackPublicClient,
+  getChainById,
   rateLimit,
   requestId as requestIdMiddleware,
   getRequestId,
@@ -34,6 +35,14 @@ import {
   initTracing,
 } from "@twinkle/shared";
 
+// Get chain configuration from environment
+const chainId = getCurrentChainId();
+const chain = getChainById(chainId);
+const contracts = getContracts(chainId as SupportedChainId);
+const networkName = chainId === 1 ? 'Mainnet' : 'Sepolia';
+const mneeAddress = chainId === 1 ? contracts.MNEE : contracts.TestMNEE;
+const mneeSymbol = chainId === 1 ? 'MNEE' : 'tMNEE';
+
 // Initialize observability first
 initTracing({ serviceName: "facilitator" });
 initSentry({ serviceName: "facilitator" });
@@ -45,7 +54,7 @@ const logger = createLogger({ serviceName: "facilitator" });
 const redis = createRedisClient();
 
 // Initialize public client for health checks
-const publicClient = createFallbackPublicClient();
+const publicClient = createFallbackPublicClient({ chain });
 
 // Initialize services
 const verificationService = createVerificationService();
@@ -151,7 +160,8 @@ app.get("/", (c) => {
     service: "twinkle-x402-facilitator",
     version: "1.0.0",
     status: "healthy",
-    chainId: CHAIN_IDS.SEPOLIA,
+    chainId,
+    network: networkName,
     settlementEnabled: !!settlementService,
   });
 });
@@ -184,13 +194,13 @@ app.get("/supported", (c) => {
   return c.json({
     networks: [
       {
-        network: `eip155:${CHAIN_IDS.SEPOLIA}`,
-        chainId: CHAIN_IDS.SEPOLIA,
-        name: "Sepolia",
+        network: `eip155:${chainId}`,
+        chainId,
+        name: networkName,
         assets: [
           {
-            address: SEPOLIA_CONTRACTS.TestMNEE,
-            symbol: "tMNEE",
+            address: mneeAddress,
+            symbol: mneeSymbol,
             decimals: 18,
           },
         ],
@@ -198,8 +208,8 @@ app.get("/supported", (c) => {
     ],
     facilitator: settlementService?.facilitatorAddress || null,
     contracts: {
-      TwinkleX402: SEPOLIA_CONTRACTS.TwinkleX402,
-      TwinklePay: SEPOLIA_CONTRACTS.TwinklePay,
+      TwinkleX402: contracts.TwinkleX402,
+      TwinklePay: contracts.TwinklePay,
     },
   });
 });
@@ -537,7 +547,7 @@ app.get("/request/:id", async (c) => {
 const port = parseInt(process.env.FACILITATOR_PORT || "3001", 10);
 
 logger.info(
-  { port, chainId: CHAIN_IDS.SEPOLIA, x402: SEPOLIA_CONTRACTS.TwinkleX402 },
+  { port, chainId, network: networkName, x402: contracts.TwinkleX402 },
   "Starting x402 Facilitator"
 );
 

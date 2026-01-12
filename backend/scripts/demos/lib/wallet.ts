@@ -15,15 +15,18 @@ import {
   type Chain,
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { sepolia } from 'viem/chains';
+import { sepolia, mainnet } from 'viem/chains';
 import { CONFIG } from './config.js';
+
+// Get chain based on config
+const chain = CONFIG.chainId === 1 ? mainnet : sepolia;
 
 /**
  * Create a public client for reading from the blockchain
  */
 export function createPublicClientInstance(): PublicClient {
   return createPublicClient({
-    chain: sepolia,
+    chain,
     transport: http(CONFIG.rpcUrl),
   });
 }
@@ -38,7 +41,7 @@ export function createWalletClientInstance(privateKey?: string): WalletClient {
 
   return createWalletClient({
     account,
-    chain: sepolia,
+    chain,
     transport: http(CONFIG.rpcUrl),
   });
 }

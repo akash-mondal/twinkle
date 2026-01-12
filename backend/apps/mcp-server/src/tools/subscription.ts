@@ -6,9 +6,14 @@
 import { z } from "zod";
 import { formatUnits, type Address } from "viem";
 
-import { SEPOLIA_CONTRACTS } from "@twinkle/shared/constants";
+import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
 import { TwinkleSubscriptionAbi } from "@twinkle/shared/abis";
-import { createFallbackPublicClient, createLogger } from "@twinkle/shared";
+import { createFallbackPublicClient, getChainById, createLogger } from "@twinkle/shared";
+
+// Get chain configuration
+const chainId = getCurrentChainId();
+const chain = getChainById(chainId);
+const contracts = getContracts(chainId as SupportedChainId);
 
 // Create logger for subscription tools
 const logger = createLogger({
@@ -47,8 +52,8 @@ let _client: ReturnType<typeof createFallbackPublicClient> | null = null;
 
 function getClient() {
   if (!_client) {
-    logger.debug("Creating RPC fallback client");
-    _client = createFallbackPublicClient();
+    logger.debug({ chainId, network: chainId === 1 ? 'mainnet' : 'sepolia' }, "Creating RPC fallback client");
+    _client = createFallbackPublicClient({ chain });
   }
   return _client;
 }
@@ -71,7 +76,7 @@ export async function getPlan(planId: string): Promise<{
 
   try {
     const result = await client.readContract({
-      address: SEPOLIA_CONTRACTS.TwinkleSubscription as Address,
+      address: contracts.TwinkleSubscription as Address,
       abi: TwinkleSubscriptionAbi,
       functionName: "getPlan",
       args: [planId as `0x${string}`],
@@ -107,7 +112,7 @@ export async function hasValidSubscription(
 
   try {
     const isValid = await client.readContract({
-      address: SEPOLIA_CONTRACTS.TwinkleSubscription as Address,
+      address: contracts.TwinkleSubscription as Address,
       abi: TwinkleSubscriptionAbi,
       functionName: "hasValidSubscription",
       args: [planId as `0x${string}`, userAddress as Address],
@@ -115,7 +120,7 @@ export async function hasValidSubscription(
 
     if (isValid) {
       const subId = await client.readContract({
-        address: SEPOLIA_CONTRACTS.TwinkleSubscription as Address,
+        address: contracts.TwinkleSubscription as Address,
         abi: TwinkleSubscriptionAbi,
         functionName: "getUserSubscription",
         args: [planId as `0x${string}`, userAddress as Address],
@@ -151,7 +156,7 @@ export async function getSubscription(subId: string): Promise<{
 
   try {
     const result = await client.readContract({
-      address: SEPOLIA_CONTRACTS.TwinkleSubscription as Address,
+      address: contracts.TwinkleSubscription as Address,
       abi: TwinkleSubscriptionAbi,
       functionName: "getSubscription",
       args: [subId as `0x${string}`],

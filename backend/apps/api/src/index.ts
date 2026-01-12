@@ -20,7 +20,7 @@ import {
   analytics,
 } from "./modules/index.js";
 import { checkDatabase } from "./db.js";
-import { SEPOLIA_CONTRACTS, CHAIN_IDS } from "@twinkle/shared/constants";
+import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
 import {
   createRedisClient,
   createLogger,
@@ -35,6 +35,11 @@ import {
   captureError,
   initTracing,
 } from "@twinkle/shared";
+
+// Get chain configuration from environment
+const chainId = getCurrentChainId();
+const contracts = getContracts(chainId as SupportedChainId);
+const networkName = chainId === 1 ? 'Mainnet' : 'Sepolia';
 
 // Initialize observability first
 initTracing({ serviceName: "api" });
@@ -115,14 +120,15 @@ app.get("/", async (c) => {
     version: "1.0.0",
     status: dbHealthy ? "healthy" : "degraded",
     database: dbHealthy ? "connected" : "disconnected",
-    chainId: CHAIN_IDS.SEPOLIA,
+    chainId,
+    network: networkName,
     contracts: {
-      TwinkleCore: SEPOLIA_CONTRACTS.TwinkleCore,
-      TwinklePay: SEPOLIA_CONTRACTS.TwinklePay,
-      TwinkleSubscription: SEPOLIA_CONTRACTS.TwinkleSubscription,
-      TwinkleEscrow: SEPOLIA_CONTRACTS.TwinkleEscrow,
-      TwinkleSplit: SEPOLIA_CONTRACTS.TwinkleSplit,
-      TwinkleX402: SEPOLIA_CONTRACTS.TwinkleX402,
+      TwinkleCore: contracts.TwinkleCore,
+      TwinklePay: contracts.TwinklePay,
+      TwinkleSubscription: contracts.TwinkleSubscription,
+      TwinkleEscrow: contracts.TwinkleEscrow,
+      TwinkleSplit: contracts.TwinkleSplit,
+      TwinkleX402: contracts.TwinkleX402,
     },
   });
 });
@@ -198,7 +204,7 @@ app.onError((err, c) => {
 const port = parseInt(process.env.API_PORT || "3000", 10);
 
 logger.info(
-  { port, chainId: CHAIN_IDS.SEPOLIA },
+  { port, chainId, network: networkName },
   "Starting Twinkle API"
 );
 

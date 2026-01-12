@@ -12,16 +12,16 @@ import {
   type Hash,
   decodeEventLog,
 } from "viem";
-import { sepolia } from "viem/chains";
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import type { Redis } from "ioredis";
 
-import { SEPOLIA_CONTRACTS } from "@twinkle/shared/constants";
+import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
 import { TwinkleX402Abi } from "@twinkle/shared/abis";
 import type { PaymentIntent } from "@twinkle/shared";
 import {
   createFallbackPublicClient,
   createFallbackTransport,
+  getChainById,
   NonceManager,
   createLogger,
   settlementsTotal,
@@ -69,25 +69,31 @@ export class SettlementService {
   private x402Address: Address;
   private nonceManager: NonceManager | null = null;
   private config: Required<SettlementServiceConfig>;
+  private chainId: number;
 
   constructor(
     privateKey: `0x${string}`,
     redis?: Redis,
-    config: SettlementServiceConfig = {}
+    config: SettlementServiceConfig = {},
+    chainId?: number
   ) {
     this.account = privateKeyToAccount(privateKey);
     this.config = { ...DEFAULT_CONFIG, ...config };
+    this.chainId = chainId ?? getCurrentChainId();
+
+    const chain = getChainById(this.chainId);
+    const contracts = getContracts(this.chainId as SupportedChainId);
 
     // Create clients with fallback RPC
-    this.publicClient = createFallbackPublicClient();
+    this.publicClient = createFallbackPublicClient({ chain });
 
     this.walletClient = createWalletClient({
       account: this.account,
-      chain: sepolia,
-      transport: createFallbackTransport(),
+      chain,
+      transport: createFallbackTransport({ chain }),
     });
 
-    this.x402Address = SEPOLIA_CONTRACTS.TwinkleX402 as Address;
+    this.x402Address = contracts.TwinkleX402 as Address;
 
     // Initialize nonce manager if Redis provided
     if (redis) {

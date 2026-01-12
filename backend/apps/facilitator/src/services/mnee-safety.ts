@@ -9,8 +9,8 @@ import {
   type PublicClient,
   type Address,
 } from "viem";
-import { sepolia } from "viem/chains";
-import { SEPOLIA_CONTRACTS, CHAIN_IDS } from "@twinkle/shared/constants";
+import { getChainById } from "@twinkle/shared";
+import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
 
 // Minimal MNEE ABI for safety checks
 const MNEE_ABI = [
@@ -72,14 +72,21 @@ export class MNEESafetyService {
   private publicClient: PublicClient;
   private mneeAddress: Address;
   private x402Address: Address;
+  private chainId: number;
 
-  constructor(rpcUrl: string) {
+  constructor(rpcUrl: string, chainId?: number) {
+    this.chainId = chainId ?? getCurrentChainId();
+    const chain = getChainById(this.chainId);
+    const contracts = getContracts(this.chainId as SupportedChainId);
+
     this.publicClient = createPublicClient({
-      chain: sepolia,
+      chain,
       transport: http(rpcUrl),
     });
-    this.mneeAddress = SEPOLIA_CONTRACTS.TestMNEE as Address;
-    this.x402Address = SEPOLIA_CONTRACTS.TwinkleX402 as Address;
+
+    // Use MNEE on mainnet, TestMNEE on testnet
+    this.mneeAddress = (this.chainId === 1 ? contracts.MNEE : contracts.TestMNEE) as Address;
+    this.x402Address = contracts.TwinkleX402 as Address;
   }
 
   /**
@@ -237,10 +244,11 @@ export class MNEESafetyService {
  * Create MNEE safety service from environment
  */
 export function createMNEESafetyService(): MNEESafetyService {
-  const rpcUrl = process.env.RPC_URL || process.env.PONDER_RPC_URL_11155111;
+  const chainId = getCurrentChainId();
+  const rpcUrl = process.env.RPC_URL || process.env[`PONDER_RPC_URL_${chainId}`];
   if (!rpcUrl) {
-    throw new Error("RPC_URL environment variable required");
+    throw new Error(`RPC_URL or PONDER_RPC_URL_${chainId} environment variable required`);
   }
 
-  return new MNEESafetyService(rpcUrl);
+  return new MNEESafetyService(rpcUrl, chainId);
 }
