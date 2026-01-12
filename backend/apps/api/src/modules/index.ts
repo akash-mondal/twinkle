@@ -5,3 +5,4 @@ export { default as projects } from "./projects.js";
 export { default as splits } from "./splits.js";
 export { default as x402 } from "./x402.js";
 export { default as analytics } from "./analytics.js";
+export { default as agentpay } from "./agentpay.js";

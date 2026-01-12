@@ -6,6 +6,7 @@ import {
   ProductShowcase,
   Features,
   Integrations,
+  AppsShowcase,
   CTA,
   Footer,
 } from "@/components/landing";
@@ -19,6 +20,7 @@ export default function Home() {
       <HowItWorks />
       <ProductShowcase />
       <Features />
+      <AppsShowcase />
       <Integrations />
       <CTA />
       <Footer />

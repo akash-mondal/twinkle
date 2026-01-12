@@ -18,6 +18,7 @@ import {
   splits,
   x402,
   analytics,
+  agentpay,
 } from "./modules/index.js";
 import { checkDatabase } from "./db.js";
 import { getContracts, getCurrentChainId, type SupportedChainId } from "@twinkle/shared/constants";
@@ -168,6 +169,7 @@ app.route("/projects", projects);
 app.route("/splits", splits);
 app.route("/x402", x402);
 app.route("/analytics", analytics);
+app.route("/agentpay", agentpay);
 
 // 404 handler
 app.notFound((c) => {

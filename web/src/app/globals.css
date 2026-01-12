@@ -123,3 +123,17 @@ code, pre {
   outline: 2px solid var(--purple-500);
   outline-offset: 2px;
 }
+
+/* Milestone diagonal stripes animation */
+@keyframes slide {
+  0% {
+    transform: rotate(-12deg) translateX(0);
+  }
+  100% {
+    transform: rotate(-12deg) translateX(-200px);
+  }
+}
+
+.animate-slide {
+  animation: slide 20s linear infinite;
+}

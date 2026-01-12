@@ -5,5 +5,6 @@ export { HowItWorks } from "./HowItWorks";
 export { ProductShowcase } from "./ProductShowcase";
 export { Features } from "./Features";
 export { Integrations } from "./Integrations";
+export { AppsShowcase } from "./AppsShowcase";
 export { CTA } from "./CTA";
 export { Footer } from "./Footer";

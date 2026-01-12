@@ -7,9 +7,9 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
+  { href: "/apps", label: "Apps" },
   { href: "/docs", label: "Docs" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "https://github.com/twinkle-protocol", label: "GitHub", external: true },
+  { href: "https://github.com/anthropics/twinkle-protocol", label: "GitHub", external: true },
 ];
 
 export function Navbar() {

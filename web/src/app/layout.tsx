@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Syne } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const syne = Syne({
   variable: "--font-syne",
@@ -35,7 +36,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${syne.variable} antialiased`}>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
