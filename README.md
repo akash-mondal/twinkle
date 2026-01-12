@@ -6,9 +6,11 @@ A payment platform for AI agents and content monetization built on Ethereum. Imp
 
 - [Overview](#overview)
 - [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
 - [Features](#features)
 - [Smart Contracts](#smart-contracts)
 - [Backend Services](#backend-services)
+- [Web Application](#web-application)
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Testing](#testing)
@@ -91,8 +93,13 @@ graph LR
     subgraph "Backend"
         API[REST API :3000]
         Fac[Facilitator :3001]
-        MCP[MCP Server :3002]
+        MCP[MCP Server stdio]
         Idx[Indexer]
+        Worker[Worker]
+    end
+
+    subgraph "Frontend"
+        Web[Next.js App :3002]
     end
 
     Core --> Pay
@@ -104,6 +111,7 @@ graph LR
     Idx --> API
     Fac --> X402
     MCP --> API
+    Web --> API
 ```
 
 ### Directory Structure
@@ -113,24 +121,85 @@ twinkle/
 ├── contracts/                 # Solidity smart contracts (Foundry)
 │   ├── src/
 │   │   ├── twinkle/          # Core protocol contracts
+│   │   │   └── base/         # Common defensive patterns
 │   │   ├── interfaces/       # Contract interfaces
 │   │   └── test-mnee/        # Test token implementation
-│   ├── script/               # Deployment scripts
+│   ├── script/               # Deployment & test scripts (17 scripts)
 │   ├── test/                 # Contract tests
-│   └── lib/                  # Dependencies (forge-std, OpenZeppelin)
+│   └── lib/                  # Dependencies (OpenZeppelin, Sablier, forge-std)
 │
-└── backend/                   # Backend services (TypeScript)
-    ├── apps/
-    │   ├── api/              # REST API server
-    │   ├── facilitator/      # x402 settlement service
-    │   ├── indexer/          # Ponder blockchain indexer
-    │   ├── mcp-server/       # MCP server for AI agents
-    │   └── worker/           # Background job processor
-    ├── packages/
-    │   └── shared/           # Shared types, ABIs, utilities
-    └── scripts/
-        └── demos/            # Demo scripts
+├── backend/                   # Backend services (TypeScript)
+│   ├── apps/
+│   │   ├── api/              # REST API server (Hono)
+│   │   ├── facilitator/      # x402 settlement service
+│   │   ├── indexer/          # Ponder blockchain indexer
+│   │   ├── mcp-server/       # MCP server for AI agents
+│   │   └── worker/           # Background job processor (BullMQ)
+│   ├── packages/
+│   │   ├── shared/           # Shared types, ABIs, utilities
+│   │   └── database/         # Database utilities
+│   ├── scripts/
+│   │   └── demos/            # Demo scripts (8+ demos)
+│   └── docker-compose.yml    # Local infrastructure
+│
+└── web/                       # Next.js web application
+    ├── src/
+    │   ├── app/              # App router pages
+    │   ├── components/       # React components
+    │   │   ├── landing/      # Landing page sections
+    │   │   └── ui/           # Reusable UI components
+    │   └── lib/              # Utilities
+    └── public/               # Static assets
 ```
+
+---
+
+## Tech Stack
+
+### Smart Contracts
+
+| Technology | Purpose |
+|------------|---------|
+| Solidity 0.8.20 | Smart contract language |
+| Foundry | Development framework |
+| OpenZeppelin | Security libraries |
+| Sablier V3 | Token streaming for escrow |
+
+### Backend
+
+| Technology | Purpose |
+|------------|---------|
+| Node.js 20+ | Runtime |
+| TypeScript 5 | Language |
+| Turborepo | Monorepo orchestration |
+| pnpm | Package manager |
+| Hono | HTTP framework |
+| Ponder 0.8 | Blockchain indexer |
+| Viem 2.21 | Ethereum interaction |
+| PostgreSQL | Primary database |
+| Redis 7 | Caching & job queues |
+| BullMQ | Background jobs |
+| MCP SDK | AI agent interface |
+| Zod | Schema validation |
+| Pino | Structured logging |
+| Prometheus | Metrics |
+| OpenTelemetry | Distributed tracing |
+| Sentry | Error tracking |
+
+### Frontend
+
+| Technology | Purpose |
+|------------|---------|
+| Next.js 16 | React meta-framework |
+| React 19 | UI library |
+| TypeScript | Language |
+| Tailwind CSS 4 | Styling |
+| Framer Motion | Animations |
+| GSAP | Advanced animations |
+| Wagmi 3 | React Ethereum hooks |
+| Viem 2 | Ethereum library |
+| Privy | Web3 authentication |
+| TanStack Query | Data fetching |
 
 ---
 
@@ -349,6 +418,48 @@ Model Context Protocol server for AI agent integration.
 
 ---
 
+## Web Application
+
+The web application is a Next.js 16 (App Router) application with React 19.
+
+### Features
+
+- **Landing Page**: Marketing site with product showcases
+- **Web3 Authentication**: Privy-powered wallet connection
+- **Responsive Design**: Mobile-first with Tailwind CSS 4
+- **Smooth Animations**: Framer Motion + GSAP for engaging UX
+- **Ethereum Integration**: Wagmi hooks for wallet interactions
+
+### Landing Page Components
+
+| Component | Description |
+|-----------|-------------|
+| Hero | Main hero section with animated feature demos |
+| SocialProof | Technology badges and trust indicators |
+| HowItWorks | Step-by-step flow explanation |
+| ProductShowcase | Interactive product demonstrations |
+| Features | Feature highlights with icons |
+| Integrations | Integration ecosystem display |
+| CTA | Call-to-action section |
+| Footer | Links and social media |
+
+### Setup
+
+```bash
+cd web
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+```
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -409,15 +520,32 @@ pnpm --filter @twinkle/shared build
 pnpm dev
 ```
 
+### Web App Setup
+
+```bash
+cd web
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+# Opens at http://localhost:3002
+```
+
 ### Service Ports
 
 | Service | Port |
 |---------|------|
 | REST API | 3000 |
 | Facilitator | 3001 |
-| MCP Server | 3002 |
+| Web App | 3002 |
+| MCP Server | stdio |
+| Ponder Indexer | 42069 (dev) |
 | PostgreSQL | 5432 |
 | Redis | 6379 |
+| pgAdmin (optional) | 5050 |
+| Redis Commander (optional) | 8081 |
 
 ---
 
@@ -519,14 +647,15 @@ export RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
 export TEST_PRIVATE_KEY=0x...
 
 # Run demos
-npx tsx demo-api-queries.ts      # Query all API endpoints
-npx tsx demo-x402-agent.ts       # Full x402 payment flow
-npx tsx demo-paywall-flow.ts     # Paywall lifecycle
-npx tsx demo-subscription.ts     # Subscription workflow
-npx tsx demo-escrow.ts           # Escrow milestone flow
-npx tsx demo-split.ts            # Revenue distribution
-npx tsx demo-mcp-tools.ts        # MCP tool testing
-npx tsx demo-full-workflow.ts    # Complete demonstration
+npx tsx demo-api-queries.ts        # Query all API endpoints
+npx tsx demo-x402-agent.ts         # Full x402 payment flow
+npx tsx demo-paywall-flow.ts       # Paywall lifecycle
+npx tsx demo-subscription.ts       # Subscription workflow
+npx tsx demo-escrow.ts             # Escrow milestone flow
+npx tsx demo-split.ts              # Revenue distribution
+npx tsx demo-mcp-tools.ts          # MCP tool testing
+npx tsx demo-full-workflow.ts      # Complete demonstration
+npx tsx demo-sablier-streaming.ts  # Sablier token streaming
 ```
 
 ---
@@ -611,9 +740,29 @@ GET /analytics/daily?startDate=2024-01-01&endDate=2024-01-31
 
 ## MCP Server
 
+The MCP (Model Context Protocol) server enables AI agents like Claude to interact with the Twinkle payment protocol.
+
 ### Configuration
 
 Add to Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "twinkle": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/backend/apps/mcp-server/src/index.ts"],
+      "env": {
+        "RPC_URL": "https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY",
+        "API_URL": "http://localhost:3000",
+        "CHAIN_ID": "11155111"
+      }
+    }
+  }
+}
+```
+
+Or if using the built version:
 
 ```json
 {
@@ -623,7 +772,8 @@ Add to Claude Desktop config (`~/Library/Application Support/Claude/claude_deskt
       "args": ["/path/to/backend/apps/mcp-server/dist/index.js"],
       "env": {
         "RPC_URL": "https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY",
-        "API_URL": "http://localhost:3000"
+        "API_URL": "http://localhost:3000",
+        "CHAIN_ID": "11155111"
       }
     }
   }
