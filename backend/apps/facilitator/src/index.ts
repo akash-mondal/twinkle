@@ -40,7 +40,10 @@ const chainId = getCurrentChainId();
 const chain = getChainById(chainId);
 const contracts = getContracts(chainId as SupportedChainId);
 const networkName = chainId === 1 ? 'Mainnet' : 'Sepolia';
-const mneeAddress = chainId === 1 ? contracts.MNEE : contracts.TestMNEE;
+// Type assertion needed because contracts is a union type
+const mneeAddress = chainId === 1
+  ? (contracts as { MNEE: string }).MNEE
+  : (contracts as { TestMNEE: string }).TestMNEE;
 const mneeSymbol = chainId === 1 ? 'MNEE' : 'tMNEE';
 
 // Initialize observability first
