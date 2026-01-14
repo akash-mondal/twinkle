@@ -217,6 +217,20 @@ services:
     networks:
       - twinkle
 
+  # Frontend
+  frontend:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://${DOMAIN}
+    container_name: twinkle-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - twinkle
+
 volumes:
   postgres_data:
   redis_data:

@@ -46,8 +46,14 @@
     # ==========================================================================
 
     # Health check at root
-    handle / {
+    # API Health check
+    handle /api/health {
         respond `{"status":"ok","chains":{"mainnet":"/api/1","sepolia":"/api/11155111"}}` 200
+    }
+
+    # Frontend (Catch-all)
+    handle /* {
+        reverse_proxy frontend:3000
     }
 
     # Security headers
