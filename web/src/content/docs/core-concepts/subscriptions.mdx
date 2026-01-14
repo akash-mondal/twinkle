@@ -1,0 +1,46 @@
+---
+title: Subscriptions
+description: Recurring revenue models powered by the Patronize protocol.
+section: Core Concepts
+order: 4
+---
+
+Subscriptions allow you to charge users on a recurring basis (e.g., monthly or yearly) for access to services or communities. Powered by the **Patronize** contract.
+
+## Creating a Plan
+
+A Plan defines the terms of the subscription: price and duration.
+
+```typescript
+import { createSubscriptionPlan } from '@twinkle/sdk';
+import { parseEther } from 'viem';
+
+const { planId } = await createSubscriptionPlan(walletClient, publicClient, {
+  price: parseEther("100"), // 100 MNEE
+  interval: 30 * 24 * 60 * 60 // 30 Days (in seconds)
+});
+```
+
+## Subscribing
+
+Users subscribe to a plan ID.
+
+```typescript
+import { subscribeToPlan } from '@twinkle/sdk';
+
+await subscribeToPlan(walletClient, publicClient, planId);
+```
+
+## Checking Status
+
+You can check if a subscription is currently active. The contract calculates the expiration date based on the last payment time + interval.
+
+```typescript
+import { isSubscribedToPlan } from '@twinkle/sdk';
+
+const isActive = await isSubscribedToPlan(
+  publicClient,
+  planId,
+  userAddress
+);
+```

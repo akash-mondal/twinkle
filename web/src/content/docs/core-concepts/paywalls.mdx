@@ -1,0 +1,62 @@
+---
+title: Paywalls
+description: Monetize digital content with the Unlock protocol.
+section: Core Concepts
+order: 3
+---
+
+Paywalls (powered by the **Unlock** contract) allow you to restrict access to resource until a payment is made. This is perfect for premium articles, video content, digital downloads, or even API endpoints.
+
+## How it Works
+
+1. **Creator** defines a `contentId` (an arbitrary string) and a `price`.
+2. **User** pays the price to the smart contract.
+3. **Contract** records the payment permanently on-chain.
+4. **Application** checks the contract: "Did User X pay for Content Y?"
+5. If yes, the content is revealed.
+
+## Creating a Paywall
+
+```typescript
+import { createPaywall } from '@twinkle/sdk';
+import { parseEther } from 'viem';
+
+const { paywallId } = await createPaywall(walletClient, publicClient, {
+  contentId: "exclusive-video-123",
+  price: parseEther("50") 
+});
+```
+
+## Checking Access
+
+To verify if a user has access, use the `isPaywallUnlocked` function. This reads directly from the blockchain, so it's always the source of truth.
+
+```typescript
+import { isPaywallUnlocked } from '@twinkle/sdk';
+
+const hasAccess = await isPaywallUnlocked(
+  publicClient,
+  paywallId,
+  userAddress
+);
+
+if (hasAccess) {
+  // Show content
+} else {
+  // Show "Buy Now" button
+}
+```
+
+## Paying for Access
+
+To unlock content, the user simply sends a transaction.
+
+```typescript
+import { payForPaywall } from '@twinkle/sdk';
+
+await payForPaywall(walletClient, publicClient, paywallId);
+```
+
+<Callout type="info">
+  **Note:** The SDK automatically handles the ERC-20 `approve` flow if required by the token contract.
+</Callout>

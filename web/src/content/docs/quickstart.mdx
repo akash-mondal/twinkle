@@ -1,0 +1,88 @@
+---
+title: Quickstart
+description: Get up and running with the Twinkle SDK in less than 5 minutes.
+section: Getting Started
+order: 2
+---
+
+In this guide, we'll install the Twinkle SDK and create a simple **Paywall**. By the end, you'll have a paid link that requires users to pay MNEE to access.
+
+## Prerequisites
+
+- **Node.js 18+**
+- **Wallet Connect Project ID** (optional, for RainbowKit/Wagmi)
+- A refined palate for good software.
+
+## 1. Install the SDK
+
+Add `@twinkle/sdk` to your project using your preferred package manager.
+
+```bash
+npm install @twinkle/sdk viem
+# or
+pnpm add @twinkle/sdk viem
+```
+
+## 2. Initialize the Client
+
+Twinkle is built on `viem`. You need to create a `publicClient` (for reading data) and a `walletClient` (for signing transactions).
+
+```typescript
+import { createPublicClient, createWalletClient, custom, http } from 'viem';
+import { mainnet } from 'viem/chains';
+import { initTwinkle } from '@twinkle/sdk';
+
+// 1. Setup Viem Clients
+const publicClient = createPublicClient({ 
+  chain: mainnet, 
+  transport: http() 
+});
+
+const walletClient = createWalletClient({ 
+  chain: mainnet, 
+  transport: custom(window.ethereum!) 
+});
+
+// 2. Initialize Twinkle
+const twinkle = initTwinkle({
+  env: "production" 
+});
+```
+
+## 3. Create a Paywall
+
+Now representing the `Unlock` protocol, let's lock some content behind a 10 MNEE price tag.
+
+```typescript
+import { createPaywall } from '@twinkle/sdk';
+import { parseEther } from 'viem';
+
+async function createMyFirstPaywall() {
+  const [account] = await walletClient.getAddresses();
+
+  const { paywallId, txHash } = await createPaywall(
+    walletClient, 
+    publicClient, 
+    {
+      contentId: "my-premium-blog-post", 
+      price: parseEther("10"), // 10 MNEE
+      currency: "MNEE" // Optional, defaults to MNEE
+    }
+  );
+
+  console.log(`Paywall created! ID: ${paywallId}`);
+  console.log(`Transaction: ${txHash}`);
+}
+```
+
+<Callout type="success">
+  **Success!** You just deployed a crypto-economic primitive without writing a single line of Solidity.
+</Callout>
+
+## Next Steps
+
+Now that you have the basics, explore the specific modules:
+
+- [Paywalls](/docs/core-concepts/paywalls)
+- [Subscriptions](/docs/core-concepts/subscriptions)
+- [Revenue Splits](/docs/core-concepts/splits)

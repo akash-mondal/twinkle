@@ -8,46 +8,42 @@ const footerLinks = [
   {
     title: "Product",
     links: [
-      { label: "Paywalls", href: "/docs/paywalls" },
-      { label: "Subscriptions", href: "/docs/subscriptions" },
-      { label: "x402 Protocol", href: "/docs/x402" },
-      { label: "Escrow", href: "/docs/escrow" },
-      { label: "Revenue Splits", href: "/docs/splits" },
+      { label: "Unlock (Paywalls)", href: "/apps/unlock" },
+      { label: "Patronize (Subscriptions)", href: "/apps/patronize" },
+      { label: "SoundSplit (Revenue Splits)", href: "/apps/soundsplit" },
+      { label: "Milestone (Escrow)", href: "/apps/milestone" },
     ],
   },
   {
     title: "Developers",
     links: [
       { label: "Documentation", href: "/docs" },
-      { label: "API Reference", href: "/docs/api" },
-      { label: "GitHub", href: "https://github.com/twinkle-protocol", external: true },
-      { label: "MCP Server", href: "/docs/mcp" },
-      { label: "Smart Contracts", href: "/docs/contracts" },
+      { label: "API Reference", href: "/docs/api/introduction" },
+      { label: "GitHub", href: "https://github.com/akash-mondal/twinkle", external: true },
+      { label: "SDK Reference", href: "/docs/sdk/reference" },
+      { label: "Installation", href: "/docs/sdk/installation" },
     ],
   },
   {
     title: "Resources",
     links: [
       { label: "Getting Started", href: "/docs" },
-      { label: "Examples", href: "/docs/examples" },
-      { label: "Changelog", href: "/changelog" },
-      { label: "Status", href: "https://status.tw1nkl3.rest", external: true },
+      { label: "Quickstart", href: "/docs/quickstart" },
+      { label: "Status", href: "/status" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", href: "/about" },
-      { label: "Twitter", href: "https://twitter.com/twinkleprotocol", external: true },
-      { label: "Discord", href: "https://discord.gg/twinkle", external: true },
-      { label: "Contact", href: "mailto:hello@tw1nkl3.rest" },
+      { label: "Twitter", href: "https://x.com/akshmnd", external: true },
+      { label: "Contact", href: "mailto:thatspacebiker@gmail.com" },
     ],
   },
 ];
 
 const socials = [
-  { href: "https://github.com/twinkle-protocol", icon: Github, label: "GitHub" },
-  { href: "https://twitter.com/twinkleprotocol", icon: Twitter, label: "Twitter" },
+  { href: "https://github.com/akash-mondal/twinkle", icon: Github, label: "GitHub" },
+  { href: "https://x.com/akshmnd", icon: Twitter, label: "Twitter" },
 ];
 
 export function Footer() {

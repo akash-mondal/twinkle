@@ -8,10 +8,22 @@ Thumbs.db
 *.swp
 *.swo
 
-# Environment files
+# Environment files - CRITICAL: NEVER COMMIT SECRETS
 .env
+.env.*
 .env.local
 .env.*.local
+!.env.example
+!.env.*.example
+
+# Secrets and private keys
+*.pem
+*.key
+**/secrets/
+**/private/
+vps-setup.sh
+deploy-vps.exp
+*.exp
 
 # Temporary files
 *.tmp
@@ -19,6 +31,13 @@ Thumbs.db
 *.bak
 *.orig
 *.log
+
+# Build artifacts
+node_modules/
+dist/
+build/
+.next/
+out/
 
 # Claude Code local files
 .claude/

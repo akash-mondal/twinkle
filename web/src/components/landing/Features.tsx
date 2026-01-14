@@ -142,33 +142,30 @@ export function Features() {
           </div>
           <pre className="text-sm overflow-x-auto font-[family-name:var(--font-mono)]">
             <code className="text-[#A1A1AA]">
-              <span className="text-[#A855F7]">const</span>{" "}
-              <span className="text-white">paywall</span>{" "}
-              <span className="text-[#A855F7]">=</span>{" "}
-              <span className="text-[#A855F7]">await</span>{" "}
-              <span className="text-[#34D399]">twinkle</span>
-              <span className="text-white">.</span>
-              <span className="text-[#60A5FA]">createPaywall</span>
-              <span className="text-white">({"{"}</span>
-              {"\n"}
-              {"  "}
-              <span className="text-white">contentId</span>
-              <span className="text-[#A855F7]">:</span>{" "}
-              <span className="text-[#34D399]">&quot;premium-article&quot;</span>
-              <span className="text-white">,</span>
-              {"\n"}
-              {"  "}
-              <span className="text-white">price</span>
-              <span className="text-[#A855F7]">:</span>{" "}
-              <span className="text-[#C084FC]">0.1</span>
-              <span className="text-white">,</span>
-              {"\n"}
-              {"  "}
-              <span className="text-white">x402</span>
-              <span className="text-[#A855F7]">:</span>{" "}
-              <span className="text-[#C084FC]">true</span>
-              {"\n"}
-              <span className="text-white">{"}"})</span>
+              <div className="mb-4">
+                <span className="text-[#71717A]">// Install the SDK</span>
+                <br />
+                <span className="text-[#A855F7]">npm</span>{" "}
+                <span className="text-[#60A5FA]">install</span>{" "}
+                <span className="text-[#34D399]">https://github.com/akash-mondal/twinkle/releases/download/v0.2.0/twinkle-sdk-0.2.0.tgz</span>
+              </div>
+
+              <div>
+                <span className="text-[#71717A]">// Initialize</span>
+                <br />
+                <span className="text-[#A855F7]">import</span>{" "}
+                <span className="text-white">{"{ initTwinkle }"}</span>{" "}
+                <span className="text-[#A855F7]">from</span>{" "}
+                <span className="text-[#34D399]">&quot;@twinkle/sdk&quot;</span>
+                <span className="text-white">;</span>
+                <br />
+                <span className="text-[#A855F7]">const</span>{" "}
+                <span className="text-white">twinkle</span>{" "}
+                <span className="text-[#A855F7]">=</span>{" "}
+                <span className="text-[#60A5FA]">initTwinkle</span>
+                <span className="text-white">()</span>
+                <span className="text-white">;</span>
+              </div>
             </code>
           </pre>
         </motion.div>

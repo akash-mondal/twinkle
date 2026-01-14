@@ -1,0 +1,38 @@
+---
+title: Revenue Splits
+description: Automatically distribute payments to multiple recipients.
+section: Core Concepts
+order: 5
+---
+
+Revenue Splits (powered by **SoundSplit**) solve the problem of collaboration. Instead of one person receiving funds and manually sending them to others, a Split contract automatically routes incoming tokens to pre-defined recipients based on percentages.
+
+## Creating a Split
+
+You define a list of recipients and their shares. The total shares typically add up to 100, but the contract logic is based on `shares / totalShares`.
+
+```typescript
+import { createSplit } from '@twinkle/sdk';
+
+const { splitId } = await createSplit(walletClient, publicClient, {
+  recipients: ["0xAlice...", "0xBob..."],
+  shares: [50n, 50n] // Equal split
+});
+```
+
+## Receiving Funds
+
+The `splitId` maps to a smart contract address. Any MNEE sent to this address is effectively "in the split".
+
+Smart contract wallets cannot typically "push" payments automatically to EOA wallets without gas. Therefore, Twinkle Splits use a **Pull** mechanism (or a "Distribute" trigger).
+
+## Distributing Funds
+
+Anyone can trigger the distribution. This function calculates the pending balance for each recipient and sends it to them.
+
+```typescript
+import { distributeSplit } from '@twinkle/sdk';
+
+// Distributes all pending MNEE in the split to its members
+await distributeSplit(walletClient, publicClient, splitId);
+```

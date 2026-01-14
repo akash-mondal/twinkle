@@ -1,299 +1,269 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import Image from "next/image";
 
 // PAYWALL DEMO - Bloomberg/NYT premium publication style (Playfair Display font)
+// PAYWALL DEMO - Unlock style (Inter/Playfair)
 function PaywallDemo() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [clicking, setClicking] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const timer1 = setTimeout(() => setClicking(true), 1800);
-    const timer2 = setTimeout(() => { setClicking(false); setUnlocked(true); }, 2200);
-    const timer3 = setTimeout(() => setUnlocked(false), 6500);
-    return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); };
-  }, [unlocked]);
+    const timer1 = setTimeout(() => setStep(1), 1500); // Start typing
+    const timer2 = setTimeout(() => setStep(2), 2500); // Click create
+    const timer3 = setTimeout(() => setStep(3), 3000); // Success
+    const timer4 = setTimeout(() => setStep(0), 6000); // Reset
+    return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); clearTimeout(timer4); };
+  }, [step]);
 
   return (
-    <div className="relative h-[360px] overflow-hidden" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-      {/* Newspaper style header */}
-      <div className="bg-[#FDF6E3] px-4 py-2 border-b-2 border-[#1a1a1a]">
-        <div className="flex items-center justify-between">
-          <span className="text-[#1a1a1a] font-bold text-base tracking-tight italic">The Protocol</span>
-          <span className="text-[9px] text-[#666] uppercase tracking-widest" style={{ fontFamily: "system-ui" }}>Jan 12, 2026</span>
+    <div className="relative h-[360px] bg-[#FDFDFC] overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="absolute inset-0 bg-[radial-gradient(#E5E7EB_1px,transparent_1px)] [background-size:16px_16px] opacity-50" />
+
+      <div className="relative p-8 h-full flex flex-col justify-center">
+        <div className="w-full max-w-sm mx-auto bg-white rounded-xl shadow-xl border border-gray-100 p-6 relative">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-[#C41200] rounded-lg flex items-center justify-center">
+              <span className="text-white font-serif italic font-bold text-xl">U</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 font-[family-name:var(--font-syne)]">Create Paste</h3>
+              <p className="text-xs text-gray-500">Share content. Get paid.</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content</label>
+              <div className="h-20 bg-gray-50 rounded-lg border border-gray-200 p-3 text-sm text-gray-900 font-mono relative overflow-hidden">
+                <span className="opacity-90">
+                  {step >= 1 ? "Top 10 Crypto Analysis for 2026..." : ""}
+                </span>
+                {step === 1 && <span className="w-0.5 h-4 bg-[#C41200] inline-block ml-0.5 animate-pulse" />}
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Price (MNEE)</label>
+                <div className="h-9 bg-gray-50 rounded-lg border border-gray-200 px-3 flex items-center text-sm font-semibold">
+                  5.00
+                </div>
+              </div>
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Preview</label>
+                <div className="h-9 bg-gray-50 rounded-lg border border-gray-200 px-3 flex items-center text-xs text-gray-500">
+                  ~100 lines
+                </div>
+              </div>
+            </div>
+
+            <motion.button
+              animate={step === 2 ? { scale: 0.95 } : { scale: 1 }}
+              className={`w-full py-3 rounded-lg font-medium text-sm transition-colors ${step >= 2 ? "bg-gray-900 text-white" : "bg-[#C41200] text-white"}`}
+            >
+              {step === 2 ? "Creating..." : "Create Locked Paste"}
+            </motion.button>
+          </div>
+
+          {/* Success Card Overlay */}
+          <AnimatePresence>
+            {step === 3 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-center p-6 rounded-xl"
+              >
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-1">Paste Created!</h4>
+                <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded border border-gray-200 mt-2">
+                  <code className="text-xs text-gray-600">unlock.app/p/8x92...</code>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-
-      {/* Article */}
-      <div className="bg-[#FDF6E3] p-4 h-full">
-        <AnimatePresence mode="wait">
-          {!unlocked ? (
-            <motion.div key="locked" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="text-[#c41200] text-[8px] font-bold uppercase tracking-widest mb-1" style={{ fontFamily: "system-ui" }}>Exclusive Analysis</div>
-              <h2 className="text-[#1a1a1a] text-lg font-bold leading-tight mb-2">
-                Autonomous Agents Reshape Digital Commerce
-              </h2>
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#e0d5c1]">
-                <div className="w-6 h-6 rounded-full bg-[#1a1a1a]" />
-                <div style={{ fontFamily: "system-ui" }}>
-                  <div className="text-[#1a1a1a] text-[10px] font-medium">Eleanor Vance</div>
-                  <div className="text-[#888] text-[8px]">Technology Correspondent</div>
-                </div>
-              </div>
-              <p className="text-[#333] text-[11px] leading-relaxed">
-                <span className="text-[#1a1a1a] text-xl font-bold float-left mr-1.5 leading-none">T</span>
-                he emergence of payment-enabled AI agents marks a fundamental shift in how value flows through the internet...
-              </p>
-
-              {/* Paywall overlay */}
-              <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#FDF6E3] via-[#FDF6E3] to-transparent flex flex-col items-center justify-end pb-4">
-                <div className="text-center px-4 py-3 bg-[#1a1a1a] rounded-lg mx-4">
-                  <div className="text-[#FDF6E3] text-xs mb-0.5">Continue reading with Premium</div>
-                  <div className="text-[#888] text-[9px] mb-2" style={{ fontFamily: "system-ui" }}>Unlimited access to analysis</div>
-                  <motion.button
-                    animate={clicking ? { scale: [1, 0.95, 1.05, 1], boxShadow: ["0 0 0 0 rgba(196,18,0,0)", "0 0 0 8px rgba(196,18,0,0.3)", "0 0 0 0 rgba(196,18,0,0)"] } : {}}
-                    transition={{ duration: 0.4 }}
-                    className="px-4 py-1.5 bg-[#c41200] text-white text-[10px] font-medium rounded"
-                    style={{ fontFamily: "system-ui" }}
-                  >
-                    Unlock · 0.25 MNEE
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div key="unlocked" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full">
-              <div className="flex items-center justify-between mb-2">
-                <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-[#e8f5e9] rounded text-[9px] text-[#2e7d32]" style={{ fontFamily: "system-ui" }}>
-                  <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                  Unlocked
-                </div>
-                <span className="text-[8px] text-[#888]" style={{ fontFamily: "system-ui" }}>5 min read</span>
-              </div>
-              <h2 className="text-[#1a1a1a] text-base font-bold leading-tight mb-2">
-                Autonomous Agents Reshape Digital Commerce
-              </h2>
-              <p className="text-[#333] text-[10px] leading-relaxed mb-2">
-                <span className="text-[#1a1a1a] text-lg font-bold float-left mr-1 leading-none">T</span>
-                he emergence of payment-enabled AI agents marks a fundamental shift in how value flows through the internet. Unlike traditional automated systems, these agents can negotiate, transact, and access premium resources autonomously.
-              </p>
-              <p className="text-[#333] text-[10px] leading-relaxed mb-2">
-                Major technology firms are racing to integrate payment rails into their AI offerings. The x402 protocol has emerged as the leading standard, enabling seamless micropayments between machines.
-              </p>
-              <p className="text-[#333] text-[10px] leading-relaxed">
-                &quot;We&apos;re witnessing the birth of an entirely new economic layer,&quot; says Dr. Sarah Chen, head of AI research at Stanford. &quot;Agents will handle 40% of all transactions by 2028.&quot;
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
 }
 
 // SUBSCRIPTION DEMO - Vibrant Patreon/Gumroad creator style (DM Sans font)
+// SUBSCRIPTION DEMO - Patronize style (Dark/Purple)
 function SubscriptionDemo() {
-  const [tier, setTier] = useState<string | null>(null);
-  const [clicking, setClicking] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const timer1 = setTimeout(() => setClicking(true), 1500);
-    const timer2 = setTimeout(() => { setClicking(false); setTier("pro"); }, 1900);
-    const timer3 = setTimeout(() => setTier(null), 5200);
-    return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); };
-  }, [tier]);
+    const timer1 = setTimeout(() => setStep(1), 1000); // Focus inputs
+    const timer2 = setTimeout(() => setStep(2), 2000); // Click create
+    const timer3 = setTimeout(() => setStep(3), 2500); // Success
+    const timer4 = setTimeout(() => setStep(0), 5500); // Reset
+    return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); clearTimeout(timer4); };
+  }, [step]);
 
   return (
-    <div className="relative h-[360px] bg-gradient-to-br from-[#7c3aed] via-[#a855f7] to-[#ec4899] overflow-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-      {/* Decorative shapes */}
-      <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-      <div className="absolute bottom-20 left-5 w-24 h-24 bg-yellow-400/20 rounded-full blur-xl" />
+    <div className="relative h-[360px] bg-[#0F0F13] overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* Background gradients */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px]" />
 
-      <div className="relative p-4">
-        {/* Creator card */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 mb-3 border border-white/20">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-xl">
-              🎨
+      <div className="relative p-8 h-full flex flex-col justify-center">
+        <div className="w-full max-w-sm mx-auto bg-[#18181B] rounded-xl border border-white/10 p-6 relative overflow-hidden">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <span className="text-white text-lg">✨</span>
             </div>
             <div>
-              <h3 className="text-white font-bold text-sm">Studio Chromatic</h3>
-              <p className="text-white/70 text-[10px]">Digital Art & Motion Design</p>
-              <div className="flex items-center gap-1 mt-0.5">
-                <div className="flex -space-x-1">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="w-3 h-3 rounded-full bg-white/30 border border-white/50" />
-                  ))}
-                </div>
-                <span className="text-white/60 text-[8px] ml-1">2.4k members</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tiers */}
-        <div className="space-y-2">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2.5 border border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-white/60 text-[9px]">Free</span>
-                <div className="text-white text-xs font-medium">Community Access</div>
-              </div>
-              <div className="text-white/50 text-[9px]">Public posts</div>
+              <h3 className="font-bold text-white font-[family-name:var(--font-syne)]">New Tier</h3>
+              <p className="text-xs text-white/50">Define your offering</p>
             </div>
           </div>
 
-          <motion.div
-            animate={{
-              borderColor: tier === "pro" ? "#facc15" : "rgba(255,255,255,0.2)",
-              backgroundColor: tier === "pro" ? "rgba(250,204,21,0.15)" : "rgba(255,255,255,0.1)",
-            }}
-            className="rounded-lg p-2.5 border-2 backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-yellow-400 text-[9px] font-bold">⭐ PRO</span>
-                  <span className="text-white font-bold text-sm">8 MNEE/mo</span>
-                </div>
-                <div className="text-white/80 text-[10px]">Tutorials + Source Files + Discord</div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs text-white/60 mb-1.5">Plan Name</label>
+              <div className={`h-10 bg-black/20 rounded-lg border px-3 flex items-center text-sm text-white transition-colors ${step >= 1 ? "border-purple-500/50" : "border-white/10"}`}>
+                Premium Access
               </div>
-              {!tier && (
-                <motion.button
-                  animate={clicking ? { scale: [1, 0.9, 1.1, 1], boxShadow: ["0 0 0 0 rgba(250,204,21,0)", "0 0 0 10px rgba(250,204,21,0.4)", "0 0 0 0 rgba(250,204,21,0)"] } : {}}
-                  transition={{ duration: 0.4 }}
-                  className="px-3 py-1.5 bg-yellow-400 text-[#1a1a1a] text-[9px] font-bold rounded-lg"
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-white/60 mb-1.5">Price (MNEE)</label>
+                <div className={`h-10 bg-black/20 rounded-lg border px-3 flex items-center text-sm text-white font-mono transition-colors ${step >= 1 ? "border-purple-500/50" : "border-white/10"}`}>
+                  10.00
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-white/60 mb-1.5">Billing</label>
+                <div className="h-10 bg-black/20 rounded-lg border border-white/10 px-3 flex items-center text-sm text-white/80">
+                  Monthly
+                </div>
+              </div>
+            </div>
+
+            <motion.button
+              animate={step === 2 ? { scale: 0.98, opacity: 0.9 } : { scale: 1, opacity: 1 }}
+              className="w-full py-3 bg-[#A855F7] hover:bg-[#9333EA] text-white rounded-lg font-medium text-sm transition-colors shadow-lg shadow-purple-500/20"
+            >
+              {step === 2 ? "Creating..." : "Create Plan"}
+            </motion.button>
+          </div>
+
+          {/* Success Overlay */}
+          <AnimatePresence>
+            {step === 3 && (
+              <motion.div
+                initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                animate={{ opacity: 1, backdropFilter: "blur(4px)" }}
+                exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                className="absolute inset-0 bg-[#0F0F13]/80 z-10 flex flex-col items-center justify-center text-center p-6"
+              >
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4 border border-green-500/30"
                 >
-                  Join
-                </motion.button>
-              )}
-            </div>
-          </motion.div>
+                  <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </motion.div>
+                <h4 className="font-bold text-white mb-1">Plan Active</h4>
+                <p className="text-xs text-white/50">Ready for subscribers</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {tier && (
-          <motion.div
-            initial={{ opacity: 0, y: 15, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="mt-3 bg-white rounded-lg p-3 text-center shadow-xl"
-          >
-            <div className="text-xl mb-0.5">🎉</div>
-            <div className="text-[#1a1a1a] font-bold text-xs">Welcome to Pro!</div>
-            <div className="text-[#666] text-[9px]">Your 7-day trial has started</div>
-          </motion.div>
-        )}
       </div>
     </div>
   );
 }
 
 // SPLITS DEMO - Clean fintech dashboard style (Inter font)
+// SPLITS DEMO - SoundSplit style (Indigo/Purple gradients)
 function SplitsDemo() {
-  const [distributed, setDistributed] = useState(false);
-  const [amounts, setAmounts] = useState([0, 0, 0]);
-  const [clicking, setClicking] = useState(false);
+  const [percent, setPercent] = useState(0);
 
   useEffect(() => {
-    const timer1 = setTimeout(() => setClicking(true), 1500);
-    const timer2 = setTimeout(() => {
-      setClicking(false);
-      setDistributed(true);
-      const final = [637.50, 382.50, 255.00];
-      let frame = 0;
-      const animate = () => {
-        frame++;
-        if (frame <= 20) {
-          setAmounts(final.map(f => (f / 20) * frame));
-          requestAnimationFrame(animate);
-        }
-      };
-      animate();
-    }, 1900);
-    const timer3 = setTimeout(() => {
-      setDistributed(false);
-      setAmounts([0, 0, 0]);
-    }, 5500);
-    return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); };
-  }, [distributed]);
-
-  const recipients = [
-    { name: "Riverstone Studios", pct: 50, color: "#6366f1" },
-    { name: "Apex Recordings", pct: 30, color: "#8b5cf6" },
-    { name: "Mixdown Labs", pct: 20, color: "#a855f7" },
-  ];
+    const interval = setInterval(() => {
+      setPercent(p => (p >= 100 ? 0 : p + 40));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="relative h-[360px] bg-[#fafafa] overflow-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-      {/* Minimal header */}
-      <div className="px-4 py-2 border-b border-[#eee] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded bg-gradient-to-br from-[#6366f1] to-[#a855f7]" />
-          <span className="text-[#1a1a1a] font-semibold text-xs">SplitFlow</span>
-        </div>
-        <span className="text-[#888] text-[9px]">Album Revenue Split</span>
-      </div>
+    <div className="relative h-[360px] bg-white overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* Soft gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 opacity-80" />
 
-      <div className="p-3">
-        {/* Amount card */}
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-[#eee] mb-3">
-          <div className="text-[#888] text-[9px] uppercase tracking-wide mb-0.5">Total Revenue</div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[#1a1a1a] text-2xl font-bold tabular-nums">1,275.00</span>
-            <span className="text-[#E78B1F] text-xs font-medium">MNEE</span>
-          </div>
-          <div className="text-[#888] text-[9px] mt-0.5">&quot;Midnight Sessions&quot; EP · Q4 2025</div>
-        </div>
-
-        {/* Recipients */}
-        <div className="space-y-1.5">
-          {recipients.map((r, i) => (
-            <div key={r.name} className="flex items-center gap-2 p-2 bg-white rounded-lg border border-[#eee]">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[9px] font-semibold" style={{ backgroundColor: r.color }}>
-                {r.pct}%
+      <div className="relative p-8 h-full flex flex-col justify-center">
+        <div className="bg-white rounded-xl shadow-xl shadow-indigo-500/10 border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#6366F1] flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[#1a1a1a] text-[10px] font-medium truncate">{r.name}</div>
-                {distributed && (
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${r.pct}%` }} className="h-0.5 rounded-full mt-0.5" style={{ backgroundColor: r.color }} />
-                )}
-              </div>
-              <div className="text-right">
-                {distributed ? (
-                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[#1a1a1a] text-xs font-semibold tabular-nums">
-                    +{amounts[i].toFixed(2)}
-                  </motion.span>
-                ) : (
-                  <span className="text-[#888] text-[10px] tabular-nums">{(1275 * r.pct / 100).toFixed(2)}</span>
-                )}
-              </div>
+              <span className="font-bold text-gray-900 font-[family-name:var(--font-syne)]">Album Split</span>
             </div>
-          ))}
+            <span className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded-full font-medium">Active</span>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-100">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-gray-500">Total Revenue</span>
+              <span className="font-bold text-gray-900">247 MNEE</span>
+            </div>
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-[#6366F1]"
+                animate={{ width: ["0%", "40%", "40%", "100%", "100%"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { addr: '0x1a...4d', pct: '40%', amt: 98.8, color: "bg-indigo-500" },
+              { addr: '0x5e...8h', pct: '35%', amt: 86.45, color: "bg-purple-500" },
+              { addr: '0x9i...2l', pct: '25%', amt: 61.75, color: "bg-pink-500" },
+            ].map((r, i) => (
+              <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${r.color}`} />
+                  <span className="text-xs font-mono text-gray-500">{r.addr}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs font-semibold text-[#6366F1]">{r.pct}</span>
+                  <motion.span
+                    className="text-xs text-gray-900 font-medium"
+                    animate={{ opacity: [0.5, 1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                  >
+                    {r.amt} MNEE
+                  </motion.span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-
-        {!distributed && (
-          <motion.button
-            animate={clicking ? { scale: [1, 0.95, 1.02, 1], boxShadow: ["0 0 0 0 rgba(26,26,26,0)", "0 0 0 8px rgba(26,26,26,0.2)", "0 0 0 0 rgba(26,26,26,0)"] } : {}}
-            transition={{ duration: 0.4 }}
-            className="w-full mt-2.5 py-2 bg-[#1a1a1a] text-white text-[10px] font-medium rounded-lg"
-          >
-            Distribute Now
-          </motion.button>
-        )}
-
-        {distributed && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2.5 text-center text-[#22c55e] text-[10px] font-medium">
-            ✓ Distributed to 3 recipients
-          </motion.div>
-        )}
       </div>
     </div>
   );
 }
 
-// ESCROW DEMO - Project management tool style (JetBrains Mono font)
+// ESCROW DEMO - Milestone/Linear style (Inter/JetBrains Mono)
 function EscrowDemo() {
   const [activeMs, setActiveMs] = useState(0);
   const [streamPct, setStreamPct] = useState(0);
@@ -327,64 +297,79 @@ function EscrowDemo() {
   ];
 
   return (
-    <div className="h-[360px] bg-[#0d1117] overflow-hidden" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-      {/* Linear-style header */}
-      <div className="px-3 py-2 border-b border-[#30363d] flex items-center gap-2">
-        <div className="flex items-center gap-1.5">
-          <div className="w-4 h-4 rounded bg-[#238636] flex items-center justify-center">
-            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"/>
-            </svg>
-          </div>
-          <span className="text-[#c9d1d9] text-[10px]">webapp-redesign</span>
+    <div className="h-[360px] bg-white overflow-hidden relative" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* Diagonal stripes background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
+        <div className="absolute inset-[-100%] rotate-[-12deg] whitespace-nowrap text-9xl font-black select-none leading-[1.1] animate-slide" style={{ color: 'black' }}>
+          MILESTONE MILESTONE MILESTONE MILESTONE MILESTONE
         </div>
-        <span className="text-[#8b949e] text-[8px]">Acme Corp → DesignLab</span>
       </div>
 
-      <div className="p-3">
+      {/* Linear-style header */}
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-sm relative z-10">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded bg-[#CAFF00] flex items-center justify-center border border-[#CAFF00]">
+            <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z" />
+            </svg>
+          </div>
+          <span className="text-zinc-900 font-semibold text-xs tracking-tight">webapp-redesign</span>
+        </div>
+        <span className="text-zinc-400 text-[10px] font-medium">Acme Corp → DesignLab</span>
+      </div>
+
+      <div className="p-4 relative z-10">
         {/* Project stats */}
-        <div className="grid grid-cols-3 gap-1.5 mb-3">
-          <div className="bg-[#161b22] rounded p-2 border border-[#30363d]">
-            <div className="text-[#8b949e] text-[8px] uppercase">Budget</div>
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-100">
+            <div className="text-zinc-400 text-[9px] uppercase tracking-wider font-semibold">Budget</div>
             <div className="text-[#E78B1F] font-bold text-sm">2,400</div>
           </div>
-          <div className="bg-[#161b22] rounded p-2 border border-[#30363d]">
-            <div className="text-[#8b949e] text-[8px] uppercase">Released</div>
-            <div className="text-[#238636] font-bold text-sm">800</div>
+          <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-100">
+            <div className="text-zinc-400 text-[9px] uppercase tracking-wider font-semibold">Released</div>
+            <div className="text-zinc-900 font-bold text-sm">800</div>
           </div>
-          <div className="bg-[#161b22] rounded p-2 border border-[#30363d]">
-            <div className="text-[#8b949e] text-[8px] uppercase">Locked</div>
-            <div className="text-[#c9d1d9] font-bold text-sm">1,600</div>
+          <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-100">
+            <div className="text-zinc-400 text-[9px] uppercase tracking-wider font-semibold">Locked</div>
+            <div className="text-zinc-400 font-bold text-sm">1,600</div>
           </div>
         </div>
 
         {/* Milestones */}
-        <div className="space-y-1">
+        <div className="space-y-2">
           {milestones.map((m) => (
-            <div key={m.name} className={`p-2 rounded border ${m.done ? 'bg-[#238636]/10 border-[#238636]/30' : 'bg-[#161b22] border-[#30363d]'}`}>
+            <div key={m.name} className={`p-2.5 rounded-lg border transition-colors ${m.done
+              ? 'bg-green-50/50 border-green-100'
+              : m.stream && activeMs === 1
+                ? 'bg-[#CAFF00]/10 border-[#CAFF00]/50 shadow-sm'
+                : 'bg-white border-gray-100'
+              }`}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   {m.done ? (
-                    <svg className="w-3 h-3 text-[#238636]" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/>
-                    </svg>
+                    <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center">
+                      <svg className="w-2.5 h-2.5 text-green-600" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z" />
+                      </svg>
+                    </div>
                   ) : m.stream && activeMs === 1 ? (
-                    <div className="w-3 h-3 rounded-full border-2 border-[#a855f7] border-t-transparent animate-spin" />
+                    <div className="w-4 h-4 rounded-full border-2 border-[#8ED600] border-t-transparent animate-spin" />
                   ) : (
-                    <div className="w-3 h-3 rounded-full border border-[#30363d]" />
+                    <div className="w-4 h-4 rounded-full border border-gray-200" />
                   )}
-                  <span className={`text-[10px] ${m.done ? 'text-[#238636]' : 'text-[#c9d1d9]'}`}>{m.name}</span>
+                  <span className={`text-[11px] font-medium ${m.done ? 'text-green-700' : 'text-zinc-700'}`}>{m.name}</span>
                 </div>
-                <span className="text-[#8b949e] text-[9px]">{m.amount}</span>
+                <span className="text-zinc-400 text-[10px] tabular-nums font-medium">{m.amount} MNEE</span>
               </div>
+
               {m.stream && activeMs === 1 && (
-                <div className="mt-1.5 ml-4">
-                  <div className="flex items-center justify-between text-[8px] mb-0.5">
-                    <span className="text-[#a855f7]">⚡ Sablier stream</span>
-                    <span className="text-[#8b949e]">{streamPct}%</span>
+                <div className="mt-2 ml-6">
+                  <div className="flex items-center justify-between text-[9px] mb-1">
+                    <span className="text-zinc-500 font-medium">⚡ Streaming payment...</span>
+                    <span className="text-zinc-400 font-mono">{streamPct}%</span>
                   </div>
-                  <div className="h-1 bg-[#30363d] rounded-full">
-                    <motion.div className="h-full bg-gradient-to-r from-[#a855f7] to-[#6366f1] rounded-full" style={{ width: `${streamPct}%` }} />
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div className="h-full bg-[#CAFF00]" style={{ width: `${streamPct}%` }} />
                   </div>
                 </div>
               )}
@@ -396,101 +381,143 @@ function EscrowDemo() {
   );
 }
 
-// X402 DEMO - Retro terminal/cyberpunk style (Space Mono font)
-let logIdCounter = 0;
+// X402 DEMO - AgentPay style (Dark/Grid/Neon)
 function X402Demo() {
-  const [logs, setLogs] = useState<{ id: number; text: string; type: string }[]>([]);
+  const [messages, setMessages] = useState<Array<{ role: string, content: string }>>([
+    { role: 'user', content: "What's the floor price of BAYC?" }
+  ]);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const addLog = (text: string, type: string) => {
-      logIdCounter++;
-      const id = logIdCounter;
-      setLogs(prev => [...prev.slice(-6), { id, text, type }]);
+    let mounted = true;
+    const timeouts: NodeJS.Timeout[] = [];
+
+    const runSequence = () => {
+      // Reset
+      setStep(0);
+      setMessages([{ role: 'user', content: "What's the floor price of BAYC?" }]);
+
+      // Step 1: Processing (after 0.5s)
+      timeouts.push(setTimeout(() => {
+        if (mounted) setStep(1);
+      }, 500));
+
+      // Step 2: Quote (after 2s)
+      timeouts.push(setTimeout(() => {
+        if (mounted) {
+          setStep(2);
+          setMessages(p => [...p, { role: 'assistant', content: "I can fetch that from Reservoir API. Cost: 0.1 MNEE." }]);
+        }
+      }, 2000));
+
+      // Step 3: Transaction (after 4s)
+      timeouts.push(setTimeout(() => {
+        if (mounted) {
+          setStep(3);
+          setMessages(p => [...p, { role: 'transaction', content: "Sent 0.1 MNEE to 0x8a...9f" }]);
+        }
+      }, 4000));
+
+      // Step 4: Result (after 5.5s)
+      timeouts.push(setTimeout(() => {
+        if (mounted) {
+          setStep(4);
+          setMessages(p => [...p, { role: 'assistant', content: "Floor Price: 12.45 ETH\n24h Volume: 245 ETH" }]);
+        }
+      }, 5500));
+
+      // Loop (after 9s)
+      timeouts.push(setTimeout(runSequence, 9000));
     };
 
-    addLog("Agent initialized: research-bot-v3", "system");
+    runSequence();
 
-    const interval = setInterval(() => {
-      const apis = ["arxiv.org/api", "news.api/headlines", "market.data/live", "scholar.api/search"];
-      const api = apis[Math.floor(Math.random() * apis.length)];
-      const cost = (Math.random() * 0.03 + 0.005).toFixed(4);
-
-      addLog(`GET ${api} [402] → paying ${cost} MNEE...`, "request");
-      setTimeout(() => {
-        addLog(`✓ ${api} [200 OK]`, "success");
-      }, 600);
-    }, 2500);
-
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      timeouts.forEach(clearTimeout);
+    };
   }, []);
 
   return (
-    <div className="relative h-[360px] bg-[#0a0a0a] overflow-hidden" style={{ fontFamily: "'Space Mono', monospace" }}>
-      {/* CRT-style header */}
-      <div className="px-3 py-1.5 bg-[#00ff00]/10 border-b border-[#00ff00]/30 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#00ff00] animate-pulse" />
-          <span className="text-[#00ff00] text-[10px]">x402-agent-terminal</span>
-        </div>
-        <span className="text-[#00ff00]/60 text-[9px]">session:7f3a9b2</span>
-      </div>
+    <div className="relative h-[360px] bg-transparent overflow-hidden flex" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* Grid background */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]" />
 
-      {/* Stats bar */}
-      <div className="px-3 py-1.5 border-b border-[#222] grid grid-cols-3 gap-3">
-        <div>
-          <div className="text-[#666] text-[7px] uppercase">Status</div>
-          <div className="text-[#00ff00] text-[10px]">● ACTIVE</div>
+      {/* Sidebar */}
+      <div className="w-16 border-r border-white/10 flex flex-col items-center py-4 gap-3 relative z-10 bg-black/20 backdrop-blur-sm">
+        <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center border border-green-500/30">
+          <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
         </div>
-        <div>
-          <div className="text-[#666] text-[7px] uppercase">Requests</div>
-          <div className="text-[#00ff00] text-[10px]">{logs.filter(l => l.type === "success").length * 2 + 12}</div>
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+          <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
         </div>
-        <div>
-          <div className="text-[#666] text-[7px] uppercase">Spent</div>
-          <div className="text-[#E78B1F] text-[10px]">{(logs.filter(l => l.type === "success").length * 0.015 + 0.156).toFixed(3)} MNEE</div>
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+          <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
         </div>
       </div>
 
-      {/* Terminal output */}
-      <div className="p-3 space-y-0.5">
-        <AnimatePresence>
-          {logs.map((log) => (
+      {/* Chat Area */}
+      <div className="flex-1 p-4 relative z-10 flex flex-col">
+        <div className="flex-1 space-y-3">
+          {messages.map((m, i) => (
             <motion.div
-              key={log.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              className={`text-[9px] leading-relaxed ${
-                log.type === "system" ? "text-[#666]" :
-                log.type === "success" ? "text-[#00ff00]" :
-                "text-[#888]"
-              }`}
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex ${m.role === 'user' ? 'justify-end' : m.role === 'transaction' ? 'justify-center' : 'justify-start'}`}
             >
-              <span className="text-[#444] mr-1.5">{new Date().toLocaleTimeString('en-US', { hour12: false })}</span>
-              {log.text}
+              {m.role === 'transaction' ? (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-mono">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {m.content}
+                </div>
+              ) : (
+                <div className={`max-w-[80%] rounded-xl p-3 text-xs ${m.role === 'user' ? 'bg-[#00FF00] text-black font-medium' : 'bg-white/10 text-white border border-white/10'}`}>
+                  {m.content}
+                </div>
+              )}
             </motion.div>
           ))}
-        </AnimatePresence>
 
-        {/* Blinking cursor */}
-        <div className="flex items-center gap-1 mt-2">
-          <span className="text-[#00ff00] text-[9px]">→</span>
-          <div className="w-1.5 h-2.5 bg-[#00ff00] animate-pulse" />
+          {step === 1 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-2 text-xs text-white">
+                <div className="w-3 h-3 border-2 border-[#00FF00] border-t-transparent rounded-full animate-spin" />
+                <span>Thinking...</span>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-2 text-xs text-white">
+                <div className="w-3 h-3 border-2 border-[#00FF00] border-t-transparent rounded-full animate-spin" />
+                <span>Processing payment...</span>
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <div className={`h-10 rounded-lg border flex items-center px-3 text-xs ${step === 0 ? 'bg-white/5 border-white/20 text-white' : 'bg-black/40 border-white/5 text-white/50'}`}>
+            {step === 0 ? "What's the floor price of..." : "Waiting for agent..."}
+          </div>
+          <div className="mt-2 flex justify-between text-[10px] text-white/30 uppercase tracking-wider">
+            <span>AgentPay v1.0</span>
+            <span>x402 Protocol</span>
+          </div>
         </div>
       </div>
-
-      {/* Scanlines effect */}
-      <div className="absolute inset-0 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.1)_2px,rgba(0,0,0,0.1)_4px)]" />
     </div>
   );
 }
 
 const tabs = [
-  { id: "paywalls", label: "Paywalls", Demo: PaywallDemo },
-  { id: "subscriptions", label: "Subscriptions", Demo: SubscriptionDemo },
-  { id: "splits", label: "Splits", Demo: SplitsDemo },
-  { id: "escrow", label: "Escrow", Demo: EscrowDemo },
-  { id: "x402", label: "X402", Demo: X402Demo },
+  { id: "unlock", label: "Paywalls", Demo: PaywallDemo, link: "/apps/unlock" },
+  { id: "patronize", label: "Subscriptions", Demo: SubscriptionDemo, link: "/apps/patronize" },
+  { id: "soundsplit", label: "Splits", Demo: SplitsDemo, link: "/apps/soundsplit" },
+  { id: "milestone", label: "Escrow", Demo: EscrowDemo, link: "/apps/milestone" },
+  { id: "agentpay", label: "x402", Demo: X402Demo, link: "/apps/agentpay" },
 ];
 
 export function Hero() {
@@ -507,7 +534,7 @@ export function Hero() {
     if (isHovered) return;
     const interval = setInterval(() => {
       setActiveTab((prev) => (prev + 1) % tabs.length);
-    }, 7000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [isHovered]);
 
@@ -517,7 +544,7 @@ export function Hero() {
       tl.fromTo(headingRef.current?.querySelectorAll(".word") || [], { y: 100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1 }, 0.3);
       tl.fromTo(subheadingRef.current, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, "-=0.3");
       tl.fromTo(ctaRef.current?.children || [], { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1 }, "-=0.2");
-      tl.fromTo(demoRef.current, { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6 }, "-=0.4");
+      tl.fromTo(demoRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, "-=0.4");
     }, heroRef);
     return () => ctx.revert();
   }, []);
@@ -546,8 +573,8 @@ export function Hero() {
               Paywalls, subscriptions, escrow, and AI-ready payments for the decentralized web. Built for creators who want to own their revenue.
             </p>
             <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3">
-              <motion.a href="/dashboard" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="px-6 py-3 bg-[#A855F7] hover:bg-[#9333EA] text-white font-medium rounded-lg transition-colors duration-200 text-center">
-                Start Building
+              <motion.a href="#apps-showcase" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="px-6 py-3 bg-[#A855F7] hover:bg-[#9333EA] text-white font-medium rounded-lg transition-colors duration-200 text-center">
+                Try Now
               </motion.a>
               <motion.a href="/docs" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="px-6 py-3 bg-white/10 hover:bg-white/15 text-white font-medium rounded-lg backdrop-blur-sm border border-white/10 transition-colors duration-200 text-center">
                 Read Docs
@@ -559,46 +586,58 @@ export function Hero() {
             ref={demoRef}
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="hidden lg:block"
+            className="hidden lg:block relative z-20"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <div className="flex mb-3 gap-1">
+            {/* Tabs Header */}
+            <div className="flex mb-4 gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {tabs.map((tab, i) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(i)}
-                  className={`relative px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${i === activeTab ? "bg-white/10 text-white" : "text-[#71717A] hover:text-[#A1A1AA]"}`}
+                  className={`relative px-4 py-2 text-xs font-medium rounded-full transition-all whitespace-nowrap ${i === activeTab ? "bg-white text-black" : "bg-white/5 text-zinc-400 hover:text-white"}`}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
 
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#A855F7]/20 to-[#6366F1]/20 rounded-2xl blur-xl" />
-              <div className="relative rounded-xl border border-white/10 shadow-[0_0_60px_rgba(168,85,247,0.1)] overflow-hidden">
+            <motion.a
+              href={tabs[activeTab].link}
+              className="block relative group"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#A855F7]/20 to-[#6366F1]/20 rounded-3xl blur-xl transition-opacity opacity-75 group-hover:opacity-100" />
+              <div className="relative rounded-2xl border border-white/10 shadow-2xl overflow-hidden bg-black/20 backdrop-blur-md">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    initial={{ opacity: 0, filter: "blur(10px)", scale: 0.98 }}
+                    animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+                    exit={{ opacity: 0, filter: "blur(10px)", scale: 1.02 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                   >
                     <CurrentDemo />
                   </motion.div>
                 </AnimatePresence>
-              </div>
-            </div>
 
+                {/* External Link Overlay Hint */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 backdrop-blur-md p-2 rounded-full border border-white/10">
+                  <ExternalLink className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </motion.a>
+
+            {/* Progress Bar */}
             {!isHovered && (
-              <div className="mt-3 h-0.5 bg-white/5 rounded-full overflow-hidden">
+              <div className="mt-6 h-1 w-full bg-white/5 rounded-full overflow-hidden">
                 <motion.div
                   key={activeTab}
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 7, ease: "linear" }}
+                  transition={{ duration: 5, ease: "linear" }}
                   className="h-full bg-gradient-to-r from-[#A855F7] to-[#6366F1]"
                 />
               </div>

@@ -1,0 +1,48 @@
+---
+title: Escrow
+description: Secure milestone-based payments for freelance work.
+section: Core Concepts
+order: 6
+---
+
+Escrow (powered by the **Milestone** protocol) provides trust between a client and a service provider. Funds are locked in a smart contract and released only when specific milestones are approved.
+
+## Workflow
+
+1. **Project Creation**: The freelancer (technically, the "receiver") initializes a project.
+2. **Funding**: The client deposits MNEE into the contract.
+3. **Milestones**: Work is divided into chunks (e.g., "Design", "Frontend", "Backend").
+4. **Approval**: Client approves a milestone, releasing that portion of funds to the freelancer.
+
+## Creating a Project
+
+```typescript
+import { createEscrowProject } from '@twinkle/sdk';
+import { parseEther } from 'viem';
+
+const { projectId } = await createEscrowProject(walletClient, publicClient, {
+  freelancer: "0xFreelancerAddress...",
+  milestoneAmounts: [parseEther("100"), parseEther("200")], // 2 Milestones
+  duration: 30 * 24 * 60 * 60 // 30 Days
+});
+```
+
+## Releasing Payment
+
+When the client is satisfied with the work, they call `approveMilestone`.
+
+```typescript
+import { approveMilestone } from '@twinkle/sdk';
+
+// Client approves the first milestone (index 0)
+await approveMilestone(
+  walletClient, 
+  publicClient, 
+  projectId, 
+  0n // Milestone Index (bigint)
+);
+```
+
+<Callout type="warning">
+  **Disputes:** If there is a disagreement, the contract currently defaults to a "Client Refund" after the deadline if no action is taken, or a mutual resolution can be triggered.
+</Callout>

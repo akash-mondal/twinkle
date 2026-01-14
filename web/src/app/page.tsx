@@ -5,7 +5,6 @@ import {
   HowItWorks,
   ProductShowcase,
   Features,
-  Integrations,
   AppsShowcase,
   CTA,
   Footer,
@@ -21,7 +20,6 @@ export default function Home() {
       <ProductShowcase />
       <Features />
       <AppsShowcase />
-      <Integrations />
       <CTA />
       <Footer />
     </main>

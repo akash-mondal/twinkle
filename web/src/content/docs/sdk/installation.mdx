@@ -1,0 +1,40 @@
+---
+title: Installation
+description: Adding Twinkle to your project.
+section: SDK Reference
+order: 7
+---
+
+## Package Models
+
+The SDK is written in TypeScript and compiled to ESM. It is designed to be tree-shakable.
+
+## Dependencies
+
+Twinkle relies on `viem` for all blockchain interactions. We chose `viem` for its small bundle size and excellent developer experience.
+
+```bash
+pnpm add @twinkle/sdk viem
+```
+
+## Configuration
+
+The `initTwinkle` function is the entry point. It sets global defaults for the SDK.
+
+### Parameters
+
+| Name | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `env` | `'production' \| 'development'` | `'production'` | Determines which contract addresses to use. |
+| `rpcUrl` | `string` | `undefined` | Optional custom RPC URL (defaults to public Mainnet RPCs). |
+
+### Example
+
+```typescript
+import { initTwinkle } from '@twinkle/sdk';
+
+const twinkle = initTwinkle({
+  env: 'production',
+  // rpcUrl: 'https://...' // Optional
+});
+```

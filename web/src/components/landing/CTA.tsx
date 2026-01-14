@@ -34,18 +34,10 @@ export function CTA() {
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <motion.a
-            href="/dashboard"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="px-8 py-4 bg-[#A855F7] hover:bg-[#9333EA] text-white font-medium rounded-lg transition-colors duration-200 text-lg"
-          >
-            Launch Dashboard
-          </motion.a>
-          <motion.a
             href="/docs"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-8 py-4 bg-transparent text-white font-medium rounded-lg border border-[#3F3F46] hover:border-[#A1A1AA] transition-colors duration-200 text-lg"
+            className="px-8 py-4 bg-[#A855F7] hover:bg-[#9333EA] text-white font-medium rounded-lg transition-colors duration-200 text-lg"
           >
             Read Documentation
           </motion.a>

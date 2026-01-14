@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/apps", label: "Apps" },
   { href: "/docs", label: "Docs" },
-  { href: "https://github.com/anthropics/twinkle-protocol", label: "GitHub", external: true },
+  { href: "https://github.com/akash-mondal/twinkle", label: "GitHub", external: true },
 ];
 
 export function Navbar() {
@@ -84,17 +84,6 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* CTA Button */}
-            <div className="hidden md:block">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-5 py-2.5 bg-[#A855F7] hover:bg-[#9333EA] text-white text-sm font-medium rounded-full transition-colors duration-200"
-              >
-                Connect Wallet
-              </motion.button>
-            </div>
-
             {/* Mobile Menu Button */}
             <button
               className="md:hidden text-white p-2"
@@ -134,14 +123,6 @@ export function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mt-4 px-8 py-3 bg-[#A855F7] text-white text-lg font-medium rounded-full"
-              >
-                Connect Wallet
-              </motion.button>
             </div>
           </motion.div>
         )}

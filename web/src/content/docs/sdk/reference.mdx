@@ -1,0 +1,113 @@
+---
+title: Reference
+description: Complete API reference for the Twinkle SDK.
+section: SDK Reference
+order: 8
+---
+
+## Paywalls
+
+### `createPaywall`
+
+Deploys a new paywall lock or registers one on the factory.
+
+```typescript
+function createPaywall(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  params: {
+    contentId: string;
+    price: bigint;
+    splitAddress?: `0x${string}`; // Optional revenue split
+    x402Enabled?: boolean; // Enable AI agent access (default: true)
+    wait?: boolean; // Wait for transaction receipt (default: true)
+  }
+): Promise<{ hash: `0x${string}`; paywallId: `0x${string}` }>
+```
+
+### `isPaywallUnlocked`
+
+Checks if a specific address has access.
+
+```typescript
+function isPaywallUnlocked(
+  publicClient: PublicClient,
+  paywallId: `0x${string}`,
+  user: `0x${string}`
+): Promise<boolean>
+```
+
+---
+
+## Subscriptions
+
+### `createSubscriptionPlan`
+
+Creates a new recurring billing plan.
+
+```typescript
+function createSubscriptionPlan(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  params: {
+    price: bigint;
+    interval: number; // Duration in seconds
+    gracePeriod?: number; // (Optional)
+    wait?: boolean;
+  }
+): Promise<{ hash: `0x${string}`; planId: `0x${string}` }>
+```
+
+### `subscribeToPlan`
+
+Subscribes the user to the plan. Requires approval of MNEE tokens first.
+
+```typescript
+function subscribeToPlan(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  planId: `0x${string}`,
+  wait?: boolean
+): Promise<`0x${string}`> // Transaction hash
+```
+
+---
+
+## Splits
+
+### `createSplit`
+
+Creates an immutable revenue split contract.
+
+```typescript
+function createSplit(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  params: {
+    recipients: `0x${string}`[];
+    shares: bigint[]; // e.g. [50, 50]
+    wait?: boolean;
+  }
+): Promise<{ hash: `0x${string}`; splitId: `0x${string}` }>
+```
+
+## Escrow
+
+### `createEscrowProject`
+
+Creates a milestone-based escrow project.
+
+```typescript
+function createEscrowProject(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  params: {
+    freelancer: `0x${string}`;
+    client?: `0x${string}`; // Defaults to sender
+    milestoneAmounts: bigint[];
+    milestoneDescriptions?: string[];
+    duration: number; // Project deadline in seconds
+    wait?: boolean;
+  }
+): Promise<{ hash: `0x${string}`; projectId: `0x${string}` }>
+```

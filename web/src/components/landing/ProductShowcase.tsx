@@ -8,31 +8,69 @@ const tabs = [
     id: "paywall",
     label: "Paywall",
     code: `// Create a paywall
-const paywall = await twinkle.createPaywall({
+const { paywallId } = await createPaywall(walletClient, publicClient, {
   contentId: "premium-guide",
-  price: 0.1,  // MNEE
-  x402: true   // Enable AI payments
+  price: parseEther("100"), // 100 MNEE
 });
 
 // Check access
-const hasAccess = await twinkle.checkAccess(
-  contentId,
+const hasAccess = await isUnlocked(
+  publicClient,
+  paywallId,
   userAddress
-);`,
+);
+
+// Unlock content
+await payForPaywall(walletClient, publicClient, paywallId);`,
   },
   {
     id: "subscription",
     label: "Subscription",
-    code: `// Create a subscription tier
-const sub = await twinkle.createSubscription({
-  name: "Pro Plan",
-  price: 5,        // MNEE per month
-  interval: 30,    // days
-  benefits: ["api-access", "priority-support"]
+    code: `// Create a plan
+const { planId } = await createSubscriptionPlan(walletClient, publicClient, {
+  price: parseEther("5"), // 5 MNEE
+  interval: 30 * 24 * 60 * 60 // 30 days
 });
 
-// User subscribes
-await twinkle.subscribe(sub.id, userAddress);`,
+// Subscribe
+await subscribeToPlan(walletClient, publicClient, planId);
+
+// Verify subscription
+const active = await isSubscribedToPlan(
+  publicClient,
+  planId,
+  userAddress
+);`,
+  },
+  {
+    id: "splits",
+    label: "Splits",
+    code: `// Create a revenue split
+const { splitId } = await createSplit(walletClient, publicClient, {
+  recipients: [
+    { address: "0x123...", percent: 60 }, // Band member
+    { address: "0x456...", percent: 40 }  // Manager
+  ],
+  name: "Album Revenue"
+});
+
+// Funds sent to splitId are automatically distributed`,
+  },
+  {
+    id: "escrow",
+    label: "Escrow",
+    code: `// Client funds a milestone
+const { gigId } = await createGig(walletClient, publicClient, {
+  freelancer: "0xFreelancer...",
+  amount: parseEther("500"), // 500 MNEE
+  deadline: 30 * 24 * 60 * 60 // 30 days
+});
+
+// Freelancer submits work
+await submitWork(walletClient, publicClient, gigId);
+
+// Client approves & releases funds
+await releasePayment(walletClient, publicClient, gigId);`,
   },
   {
     id: "x402",
@@ -55,7 +93,7 @@ export function ProductShowcase() {
   const activeContent = tabs.find((t) => t.id === activeTab);
 
   return (
-    <section className="py-24 px-6 bg-[#18181B]">
+    <section id="product-showcase" className="py-24 px-6 bg-[#18181B]">
       <div className="max-w-4xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -91,11 +129,10 @@ export function ProductShowcase() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                activeTab === tab.id
-                  ? "bg-[#A855F7] text-white"
-                  : "bg-[#27272A] text-[#A1A1AA] hover:text-white"
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.id
+                ? "bg-[#A855F7] text-white"
+                : "bg-[#27272A] text-[#A1A1AA] hover:text-white"
+                }`}
             >
               {tab.label}
             </button>
@@ -108,7 +145,7 @@ export function ProductShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="rounded-2xl bg-[#09090B] border border-[#27272A] overflow-hidden"
+          className="rounded-2xl bg-[#09090B] border border-[#27272A] overflow-hidden min-h-[400px]"
         >
           {/* Window chrome */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-[#27272A]">
