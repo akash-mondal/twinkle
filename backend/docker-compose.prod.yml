@@ -102,6 +102,8 @@ services:
       CHAIN_ID: "1"
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder_mainnet
       REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AGENTPAY_RECIPIENT: ${AGENTPAY_RECIPIENT}
     depends_on:
       postgres:
         condition: service_healthy
@@ -182,6 +184,8 @@ services:
       CHAIN_ID: "11155111"
       DATABASE_URL: postgresql://${POSTGRES_USER:-twinkle}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-twinkle}?options=-csearch_path%3Dponder_sepolia
       REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AGENTPAY_RECIPIENT: ${AGENTPAY_RECIPIENT}
     depends_on:
       postgres:
         condition: service_healthy
