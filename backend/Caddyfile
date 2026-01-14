@@ -2,7 +2,7 @@
 # Dual-chain support: Mainnet (1) and Sepolia (11155111)
 # Set DOMAIN env var for production, defaults to :80 for local
 
-{$DOMAIN::80} {
+:80 {
     # ==========================================================================
     # API Routes
     # ==========================================================================
