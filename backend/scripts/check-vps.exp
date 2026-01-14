@@ -1,0 +1,25 @@
+#!/usr/bin/expect -f
+
+set timeout 30
+set host "143.110.186.219"
+set user "root"
+set password "TWINKLE1vps"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    "# " {
+        send "cd twinkle/backend\r"
+        send "docker compose -f docker-compose.prod.yml ps\r"
+        send "exit\r"
+    }
+    timeout {
+        puts "Connection timed out"
+        exit 1
+    }
+}
+expect eof

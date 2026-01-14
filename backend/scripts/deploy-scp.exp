@@ -1,0 +1,34 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+set host "143.110.186.219"
+set user "root"
+set password "TWINKLE1vps"
+set script "scripts/vps-setup.sh"
+set remote_script "/root/vps-setup.sh"
+
+# 1. SCP the script
+spawn scp -o StrictHostKeyChecking=no $script $user@$host:$remote_script
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    eof
+}
+
+# 2. SSH to execute
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    "# " {
+        send "chmod +x $remote_script\r"
+        send "$remote_script\r"
+        expect -- "--- Setup Complete ---"
+        send "exit\r"
+    }
+}
+expect eof

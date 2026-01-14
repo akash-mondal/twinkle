@@ -1,6 +1,16 @@
 # @twinkle/sdk
 
-The official TypeScript SDK for the Twinkle Protocol. Easily interact with Twinkle's Pay, Subscription, Escrow, and Split contracts.
+The official TypeScript SDK for the **Twinkle Protocol**. Easily interact with Twinkle's Pay, Subscription, Escrow, and Split contracts, and query the **Twinkle Indexer API**.
+
+![Twinkle Protocol](https://via.placeholder.com/1200x300?text=Twinkle+Protocol+SDK)
+
+## Features
+
+- 🔐 **Paywalls**: Create and unlock content with crypto payments.
+- 🔄 **Subscriptions**: Recurring billing with auto-expiration checks.
+- 💸 **Splits**: Revenue sharing contracts for teams and collaborations.
+- 🤝 **Escrows**: Milestone-based project funding with arbitration support.
+- ⚡ **Indexer API**: Fast, typed access to indexed protocol data.
 
 ## Installation
 
@@ -10,85 +20,135 @@ pnpm add @twinkle/sdk viem
 npm install @twinkle/sdk viem
 ```
 
-## Setup
+## Quick Start
 
-Initialize the SDK with your configuration. By default, it connects to Ethereum Mainnet.
+Initialize the SDK configuration. By default, it connects to **Ethereum Mainnet** and the **Production API** (`https://tw1nkl3.rest`).
 
 ```typescript
-import { initTwinkle, createWalletClientInstance, createPublicClientInstance } from '@twinkle/sdk';
+import { 
+    initTwinkle, 
+    createWalletClientInstance, 
+    createPublicClientInstance,
+    api // Typed API Client
+} from '@twinkle/sdk';
 
-// Optional: Override defaults (e.g., to use Sepolia)
+// 1. Initialize Configuration (Optional)
+// Defaults to Mainnet + Production API.
 initTwinkle({
-  chainId: 11155111, // Sepolia
-  // contracts: { ... } // Override contract addresses if needed
+    // chainId: 11155111, // Sepolia (if testing)
 });
 
+// 2. Create Clients
+// Public Client (Read-only)
 const publicClient = createPublicClientInstance();
-// For write operations, provide a private key or account
-const walletClient = createWalletClientInstance(process.env.PRIVATE_KEY!);
+
+// Wallet Client (Write operations - requires Private Key or Account)
+// NEVER hardcode private keys in frontend code!
+const privateKey = process.env.PRIVATE_KEY as `0x${string}`;
+const walletClient = createWalletClientInstance(privateKey);
 ```
 
-## Usage
+## Usage Examples
 
-### Twinkle Pay (Paywalls)
+### 🔐 Paywalls
+
+Create granular access control for your content.
 
 ```typescript
-import { createPaywall, payForPaywall, isUnlocked } from '@twinkle/sdk';
+import { createPaywall, payForPaywall, isUnlocked, parseEther } from '@twinkle/sdk';
 
-// Create a paywall
-const { paywallId } = await createPaywall(walletClient, publicClient, {
-  contentId: 'my-premium-blog-post-1',
-  price: 1000000000000000000n, // 1 MNEE
+// Create a Paywall (Client-side)
+const { paywallId, hash } = await createPaywall(walletClient, publicClient, {
+  contentId: 'premium-article-123',
+  price: parseEther('0.001'), // Price in ETH/MNEE
 });
+console.log(`Paywall Created: ${paywallId}`);
 
-// Check access
-const hasAccess = await isUnlocked(publicClient, paywallId, userAddress);
-
-// Pay for access
+// Pay for Access (User-side)
 await payForPaywall(walletClient, publicClient, paywallId);
+
+// Verify Access (Anywhere)
+const hasAccess = await isUnlocked(publicClient, paywallId, userAddress);
+if (hasAccess) {
+  // Show content
+}
 ```
 
-### Twinkle Subscriptions
+### 🔄 Subscriptions
+
+Set up recurring revenue models. Requires **MNEE** tokens (on supported chains) for payment.
 
 ```typescript
-import { createSubscriptionPlan, subscribeToPlan, isSubscribedToPlan } from '@twinkle/sdk';
+import { createSubscriptionPlan, subscribeToPlan, approveMnee } from '@twinkle/sdk';
 
-// Create a plan
+// 1. Create a Plan
 const { planId } = await createSubscriptionPlan(walletClient, publicClient, {
-  price: 5000000000000000000n, // 5 MNEE
-  interval: 30 * 24 * 60 * 60, // 30 days
+  price: parseEther('10'), // 10 Tokens
+  interval: 30 * 24 * 60 * 60, // 30 Days (in seconds)
 });
 
-// Subscribe
+// 2. Approve Tokens (Before subscribing)
+await approveMnee(walletClient, publicClient, SDK_CONFIG.contracts.TwinkleSubscription, parseEther('100'));
+
+// 3. Subscribe
 await subscribeToPlan(walletClient, publicClient, planId);
-
-// Verify subscription
-const isValid = await isSubscribedToPlan(publicClient, planId, userAddress);
 ```
 
-### Twinkle Escrow
+### 💸 Splits
+
+Distribute revenue automatically between multiple recipients.
 
 ```typescript
-import { createEscrowProject, fundEscrowProject, releaseMilestone } from '@twinkle/sdk';
+import { createSplit } from '@twinkle/sdk';
 
-// Client creates a project
+const { splitId } = await createSplit(walletClient, publicClient, {
+  recipients: ['0xAlice...', '0xBob...'],
+  shares: [500000n, 500000n], // 50% / 50% (Shares sum to 1,000,000)
+});
+```
+
+### 🤝 Escrow
+
+Manage freelancer/client relationships with milestone payments.
+
+```typescript
+import { createEscrowProject, fundEscrowProject, requestMilestone, approveMilestone } from '@twinkle/sdk';
+
+// Client creates project
 const { projectId } = await createEscrowProject(walletClient, publicClient, {
-  freelancer: '0x...',
-  milestoneAmounts: [100n, 200n],
+  freelancer: '0xFreelancer...',
+  milestoneAmounts: [parseEther('100'), parseEther('100')], // Two milestones
+  duration: 86400 * 30, // 30 days
 });
 
-// Funding and releasing milestones
+// Client funds project
 await fundEscrowProject(walletClient, publicClient, projectId);
-// ...
+
+// Freelancer requests payout (Milestone 0)
+await requestMilestone(freelancerWallet, publicClient, projectId, 0n);
+
+// Client approves payout
+await approveMilestone(clientWallet, publicClient, projectId, 0n);
 ```
 
-## API Access
+### ⚡ Indexer API
 
-The SDK includes a typed client for the Twinkle Indexer API.
+Fetch indexed data directly from the Twinkle backend without querying the blockchain.
 
 ```typescript
-import { api } from '@twinkle/sdk';
+// Fetch all projects for a client
+const projects = await api.getProjects({ client: '0xClientAddress...' });
 
-const projects = await api.getProjects();
-const paywalls = await api.getPaywalls({ creator: '0x...' });
+// Fetch a specific paywall
+const paywall = await api.getPaywall('0xPaywallId...');
+console.log(`Creator: ${paywall.creator}, Revenue: ${paywall.totalRevenue}`);
 ```
+
+## Chains Supported
+
+- **Ethereum Mainnet** (Default)
+- **Sepolia Testnet**
+
+## License
+
+MIT

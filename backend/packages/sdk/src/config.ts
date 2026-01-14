@@ -46,7 +46,7 @@ export interface TwinkleConfig {
 export const DEFAULT_CONFIG: TwinkleConfig = {
     chainId: 1,
     rpcUrl: 'https://ethereum.publicnode.com',
-    apiUrl: 'https://twinkle-api.railway.app', // Placeholder, user should override
+    apiUrl: 'https://tw1nkl3.rest', // Production backend
     contracts: MAINNET_CONTRACTS,
 };
 
@@ -67,4 +67,5 @@ export function initTwinkle(config: Partial<TwinkleConfig>) {
             SDK_CONFIG.contracts = MAINNET_CONTRACTS;
         }
     }
+    return SDK_CONFIG;
 }

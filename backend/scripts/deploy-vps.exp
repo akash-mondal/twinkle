@@ -1,0 +1,66 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+set host "143.110.186.219"
+set user "root"
+set password "TWINKLE1vps"
+set repo "https://github.com/akash-mondal/twinkle.git"
+set private_key "0xec0838b3e14efa09c8af7a940b24c6d50117c705848b7217c49f9bf3b20b12d4"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    "# " {
+        # Logged in
+        # Wait for prompt to settle
+        sleep 1
+        
+        send "echo '--- Updating System ---'\r"
+        send "apt-get update -y\r"
+        
+        send "echo '--- Installing Docker ---'\r"
+        send "apt-get install -y docker.io docker-compose-v2 git\r"
+
+        send "echo '--- Setting up Repo ---'\r"
+        # Using 'test -d' to avoid Tcl square bracket issues
+        send "if test -d 'twinkle'; then cd twinkle && git pull; else git clone $repo && cd twinkle; fi\r"
+        send "cd backend\r"
+
+        send "echo '--- Configuring Secrets ---'\r"
+        send "cp .env.prod.example .env.prod\r"
+        
+        # Inject private key
+        send "sed -i 's|FACILITATOR_PRIVATE_KEY=.*|FACILITATOR_PRIVATE_KEY=$private_key|g' .env.prod\r"
+        
+        # Set RPC URLs
+        send "sed -i 's|RPC_URL_MAINNET=.*|RPC_URL_MAINNET=https://ethereum.publicnode.com|g' .env.prod\r"
+        send "sed -i 's|RPC_URL_SEPOLIA=.*|RPC_URL_SEPOLIA=https://ethereum-sepolia.publicnode.com|g' .env.prod\r"
+        
+        # Set Postgres Password
+        send "sed -i 's|POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=secure_twinkle_pg_pass_123!|g' .env.prod\r"
+
+        send "echo '--- Deploying Stack ---'\r"
+        # Force build to pick up new SDK
+        send "docker compose -f docker-compose.prod.yml up -d --build\r"
+        
+        # Wait for it to potentially finish or output errors (expect will read stream)
+        send "sleep 5\r"
+        send "docker compose -f docker-compose.prod.yml ps\r"
+        
+        send "echo '--- Deployment Complete ---'\r"
+        send "exit\r"
+    }
+    timeout {
+        puts "Connection timed out"
+        exit 1
+    }
+    eof {
+        puts "Connection failed"
+        exit 1
+    }
+}
+expect eof
