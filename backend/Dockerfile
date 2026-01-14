@@ -8,6 +8,7 @@ WORKDIR /app
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/sdk/package.json ./packages/sdk/
 COPY apps/api/package.json ./apps/api/
 COPY apps/facilitator/package.json ./apps/facilitator/
 COPY apps/indexer/package.json ./apps/indexer/
@@ -17,12 +18,14 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source
 COPY packages/shared ./packages/shared
+COPY packages/sdk ./packages/sdk
 COPY apps/api ./apps/api
 COPY apps/facilitator ./apps/facilitator
 COPY apps/indexer ./apps/indexer
 
 # Build shared package
 RUN pnpm --filter @twinkle/shared build
+RUN pnpm --filter @twinkle/sdk build
 
 # Build apps
 RUN pnpm --filter @twinkle/api build
@@ -39,6 +42,7 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/shared ./packages/shared
+COPY --from=builder /app/packages/sdk ./packages/sdk
 COPY --from=builder /app/apps/api ./apps/api
 COPY --from=builder /app/apps/facilitator ./apps/facilitator
 COPY --from=builder /app/apps/indexer ./apps/indexer
