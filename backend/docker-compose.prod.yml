@@ -11,6 +11,8 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
     depends_on:
       - api-mainnet
       - api-sepolia
@@ -32,7 +34,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-twinkle} -d ${POSTGRES_DB:-twinkle}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-twinkle} -d ${POSTGRES_DB:-twinkle}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,7 +50,7 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -220,6 +222,7 @@ volumes:
   redis_data:
   caddy_data:
   caddy_config:
+
 
 networks:
   twinkle:
