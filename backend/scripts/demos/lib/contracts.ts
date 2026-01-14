@@ -15,7 +15,7 @@ import { CONFIG } from './config.js';
 
 // ===== ABI Fragments =====
 
-const TWINKLE_PAY_ABI = [
+export const TWINKLE_PAY_ABI = [
   {
     type: 'function',
     name: 'createPaywall',
@@ -62,7 +62,7 @@ const TWINKLE_PAY_ABI = [
   },
 ] as const;
 
-const TWINKLE_X402_ABI = [
+export const TWINKLE_X402_ABI = [
   {
     type: 'function',
     name: 'createPaymentRequest',
@@ -140,14 +140,16 @@ const TWINKLE_X402_ABI = [
   },
 ] as const;
 
-const TWINKLE_SUBSCRIPTION_ABI = [
+export const TWINKLE_SUBSCRIPTION_ABI = [
   {
     type: 'function',
     name: 'createPlan',
     inputs: [
+      { name: 'id', type: 'bytes32' },
       { name: 'price', type: 'uint96' },
-      { name: 'interval', type: 'uint32' },
-      { name: 'gracePeriod', type: 'uint32' },
+      { name: 'intervalDays', type: 'uint32' },
+      { name: 'trialDays', type: 'uint16' },
+      { name: 'splitAddress', type: 'address' },
     ],
     outputs: [{ name: 'planId', type: 'bytes32' }],
     stateMutability: 'nonpayable',
@@ -156,7 +158,7 @@ const TWINKLE_SUBSCRIPTION_ABI = [
     type: 'function',
     name: 'subscribe',
     inputs: [{ name: 'planId', type: 'bytes32' }],
-    outputs: [],
+    outputs: [{ name: 'subId', type: 'bytes32' }],
     stateMutability: 'nonpayable',
   },
   {
@@ -165,40 +167,51 @@ const TWINKLE_SUBSCRIPTION_ABI = [
     inputs: [{ name: 'planId', type: 'bytes32' }],
     outputs: [
       { name: 'creator', type: 'address' },
-      { name: 'price', type: 'uint96' },
-      { name: 'interval', type: 'uint32' },
-      { name: 'gracePeriod', type: 'uint32' },
+      { name: 'price', type: 'uint256' },
+      { name: 'intervalDays', type: 'uint256' },
+      { name: 'trialDays', type: 'uint256' },
       { name: 'active', type: 'bool' },
-      { name: 'subscriberCount', type: 'uint32' },
+      { name: 'subscriberCount', type: 'uint256' },
+      { name: 'totalRevenue', type: 'uint256' },
+      { name: 'splitAddress', type: 'address' },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    name: 'isSubscribed',
+    name: 'isSubscriptionValid',
+    inputs: [{ name: 'subId', type: 'bytes32' }],
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'userSubscriptions',
     inputs: [
       { name: 'planId', type: 'bytes32' },
       { name: 'user', type: 'address' },
     ],
-    outputs: [{ name: '', type: 'bool' }],
+    outputs: [{ name: '', type: 'bytes32' }],
     stateMutability: 'view',
   },
 ] as const;
 
-const TWINKLE_SPLIT_ABI = [
+export const TWINKLE_SPLIT_ABI = [
   {
     type: 'function',
     name: 'createSplit',
     inputs: [
+      { name: 'id', type: 'bytes32' },
       { name: 'recipients', type: 'address[]' },
-      { name: 'shares', type: 'uint256[]' },
+      { name: 'percentages', type: 'uint256[]' },
+      { name: 'mutable_', type: 'bool' },
     ],
     outputs: [{ name: 'splitId', type: 'bytes32' }],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    name: 'deposit',
+    name: 'receiveFunds',
     inputs: [
       { name: 'splitId', type: 'bytes32' },
       { name: 'amount', type: 'uint256' },
@@ -209,7 +222,11 @@ const TWINKLE_SPLIT_ABI = [
   {
     type: 'function',
     name: 'distribute',
-    inputs: [{ name: 'splitId', type: 'bytes32' }],
+    inputs: [
+      { name: 'splitId', type: 'bytes32' },
+      { name: 'recipients', type: 'address[]' },
+      { name: 'percentages', type: 'uint256[]' },
+    ],
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -219,22 +236,31 @@ const TWINKLE_SPLIT_ABI = [
     inputs: [{ name: 'splitId', type: 'bytes32' }],
     outputs: [
       { name: 'creator', type: 'address' },
-      { name: 'balance', type: 'uint256' },
       { name: 'totalDistributed', type: 'uint256' },
+      { name: 'mutable_', type: 'bool' },
+      { name: 'active', type: 'bool' },
+      { name: 'recipientsHash', type: 'bytes32' },
+      { name: 'balance', type: 'uint256' },
+      { name: 'pendingTotal', type: 'uint256' },
     ],
     stateMutability: 'view',
   },
 ] as const;
 
-const TWINKLE_ESCROW_ABI = [
+export const TWINKLE_ESCROW_ABI = [
   {
     type: 'function',
     name: 'createProject',
     inputs: [
-      { name: 'freelancer', type: 'address' },
-      { name: 'milestoneAmounts', type: 'uint256[]' },
-      { name: 'milestoneDescriptions', type: 'string[]' },
-      { name: 'duration', type: 'uint256' },
+      { name: 'id', type: 'bytes32' },
+      { name: 'client', type: 'address' },
+      { name: 'splitAddress', type: 'address' },
+      { name: 'disputeResolution', type: 'uint8' },
+      { name: 'arbitrator', type: 'address' },
+      { name: 'arbitratorFeeBps', type: 'uint16' },
+      { name: 'approvalTimeoutDays', type: 'uint16' },
+      { name: 'milestoneAmounts', type: 'uint128[]' },
+      { name: 'streamDurations', type: 'uint32[]' },
     ],
     outputs: [{ name: 'projectId', type: 'bytes32' }],
     stateMutability: 'nonpayable',
@@ -248,14 +274,7 @@ const TWINKLE_ESCROW_ABI = [
   },
   {
     type: 'function',
-    name: 'acceptProject',
-    inputs: [{ name: 'projectId', type: 'bytes32' }],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'completeMilestone',
+    name: 'requestMilestone',
     inputs: [
       { name: 'projectId', type: 'bytes32' },
       { name: 'milestoneIndex', type: 'uint256' },
@@ -278,12 +297,13 @@ const TWINKLE_ESCROW_ABI = [
     name: 'getProject',
     inputs: [{ name: 'projectId', type: 'bytes32' }],
     outputs: [
-      { name: 'client', type: 'address' },
       { name: 'freelancer', type: 'address' },
-      { name: 'totalBudget', type: 'uint256' },
-      { name: 'released', type: 'uint256' },
+      { name: 'client', type: 'address' },
       { name: 'status', type: 'uint8' },
-      { name: 'deadline', type: 'uint256' },
+      { name: 'totalAmount', type: 'uint256' },
+      { name: 'fundedAmount', type: 'uint256' },
+      { name: 'releasedAmount', type: 'uint256' },
+      { name: 'milestoneCount', type: 'uint256' },
     ],
     stateMutability: 'view',
   },
@@ -419,9 +439,7 @@ export async function createPaymentRequest(
 
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-  // Extract requestId from event logs
-  // For now, generate it the same way the contract does
-  const requestId = generateRandomBytes32(); // This would be extracted from events in production
+  const requestId = generateRandomBytes32();
 
   return { hash, requestId };
 }
@@ -464,18 +482,26 @@ export async function createSubscriptionPlan(
   params: {
     price: bigint;
     interval: number; // in seconds
-    gracePeriod?: number; // in seconds
+    gracePeriod?: number; // ignored by contract V5
   }
 ): Promise<{ hash: `0x${string}`; planId: `0x${string}` }> {
+  const planId = generateRandomBytes32();
+  const intervalDays = Math.max(1, Math.floor(params.interval / 86400));
+
   const hash = await walletClient.writeContract({
     address: CONFIG.contracts.TwinkleSubscription,
     abi: TWINKLE_SUBSCRIPTION_ABI,
     functionName: 'createPlan',
-    args: [params.price, params.interval, params.gracePeriod || 86400],
+    args: [
+      planId,
+      params.price,
+      intervalDays,
+      0, // trialDays
+      '0x0000000000000000000000000000000000000000' // splitAddress
+    ],
   });
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  const planId = generateRandomBytes32(); // Would extract from events
+  await publicClient.waitForTransactionReceipt({ hash });
 
   return { hash, planId };
 }
@@ -501,11 +527,22 @@ export async function isSubscribedToPlan(
   planId: `0x${string}`,
   user: `0x${string}`
 ): Promise<boolean> {
+  const subId = await publicClient.readContract({
+    address: CONFIG.contracts.TwinkleSubscription,
+    abi: TWINKLE_SUBSCRIPTION_ABI,
+    functionName: 'userSubscriptions',
+    args: [planId, user],
+  });
+
+  if (!subId || subId === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+    return false;
+  }
+
   return publicClient.readContract({
     address: CONFIG.contracts.TwinkleSubscription,
     abi: TWINKLE_SUBSCRIPTION_ABI,
-    functionName: 'isSubscribed',
-    args: [planId, user],
+    functionName: 'isSubscriptionValid',
+    args: [subId],
   });
 }
 
@@ -519,16 +556,21 @@ export async function createSplit(
     shares: bigint[];
   }
 ): Promise<{ hash: `0x${string}`; splitId: `0x${string}` }> {
+  const splitId = generateRandomBytes32();
+
   const hash = await walletClient.writeContract({
     address: CONFIG.contracts.TwinkleSplit,
     abi: TWINKLE_SPLIT_ABI,
     functionName: 'createSplit',
-    args: [params.recipients, params.shares],
+    args: [
+      splitId,
+      params.recipients,
+      params.shares,
+      false // mutable_
+    ],
   });
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  const splitId = generateRandomBytes32(); // Would extract from events
-
+  await publicClient.waitForTransactionReceipt({ hash });
   return { hash, splitId };
 }
 
@@ -538,10 +580,11 @@ export async function depositToSplit(
   splitId: `0x${string}`,
   amount: bigint
 ): Promise<`0x${string}`> {
+  // Use receiveFunds instead of deposit
   const hash = await walletClient.writeContract({
     address: CONFIG.contracts.TwinkleSplit,
     abi: TWINKLE_SPLIT_ABI,
-    functionName: 'deposit',
+    functionName: 'receiveFunds',
     args: [splitId, amount],
   });
 
@@ -552,13 +595,15 @@ export async function depositToSplit(
 export async function distributeSplit(
   walletClient: WalletClient,
   publicClient: PublicClient,
-  splitId: `0x${string}`
+  splitId: `0x${string}`,
+  recipients: `0x${string}`[],
+  percentages: bigint[]
 ): Promise<`0x${string}`> {
   const hash = await walletClient.writeContract({
     address: CONFIG.contracts.TwinkleSplit,
     abi: TWINKLE_SPLIT_ABI,
     functionName: 'distribute',
-    args: [splitId],
+    args: [splitId, recipients, percentages],
   });
 
   await publicClient.waitForTransactionReceipt({ hash });
@@ -571,27 +616,39 @@ export async function createEscrowProject(
   walletClient: WalletClient,
   publicClient: PublicClient,
   params: {
-    freelancer: `0x${string}`;
+    freelancer: `0x${string}`; // This is effectively the caller (msg.sender)
+    client?: `0x${string}`; // The funding party
     milestoneAmounts: bigint[];
-    milestoneDescriptions: string[];
+    milestoneDescriptions: string[]; // ignored
     duration: number; // in seconds
   }
 ): Promise<{ hash: `0x${string}`; projectId: `0x${string}` }> {
+  const projectId = generateRandomBytes32();
+  // If client not provided, use a random address to avoid "InvalidClient" (freelancer == client)
+  // For demo purposes only. Real usage should provide actual client.
+  const client = params.client || '0x1111111111111111111111111111111111111111';
+
+  // Create stream durations array (0 for instant) - simplistic for demo
+  const streamDurations = params.milestoneAmounts.map(() => 0);
+
   const hash = await walletClient.writeContract({
     address: CONFIG.contracts.TwinkleEscrow,
     abi: TWINKLE_ESCROW_ABI,
     functionName: 'createProject',
     args: [
-      params.freelancer,
+      projectId,
+      client,
+      '0x0000000000000000000000000000000000000000', // splitAddress
+      0, // disputeResolution: None
+      '0x0000000000000000000000000000000000000000', // arbitrator
+      0, // fee
+      14, // timeout
       params.milestoneAmounts,
-      params.milestoneDescriptions,
-      BigInt(params.duration),
+      streamDurations // streamDurations
     ],
   });
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  const projectId = generateRandomBytes32(); // Would extract from events
-
+  await publicClient.waitForTransactionReceipt({ hash });
   return { hash, projectId };
 }
 

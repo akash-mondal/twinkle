@@ -43,6 +43,7 @@
     "@opentelemetry/semantic-conventions": "^1.38.0",
     "@sentry/node": "^10.32.1",
     "bullmq": "^5.66.4",
+    "dotenv": "^17.2.3",
     "ioredis": "^5.9.1",
     "pino": "^10.1.1",
     "pino-pretty": "^13.1.3",

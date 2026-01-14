@@ -1,3 +1,4 @@
+import 'dotenv/config';
 /**
  * Twinkle Demo Configuration
  * Contract addresses and service URLs
@@ -44,7 +45,7 @@ const mneeAddress = chainId === 1
 export const CONFIG = {
   // Chain configuration
   chainId,
-  chainName: chainId === 1 ? 'Mainnet' : 'Sepolia',
+  chainName: chainId === 1 ? 'Mainnet (Real MNEE)' : 'Sepolia (Test MNEE)',
 
   // RPC URL - Required for on-chain transactions
   rpcUrl: process.env.RPC_URL || (chainId === 1
@@ -65,13 +66,8 @@ export const CONFIG = {
 
   // Test wallet - Required for on-chain transactions
   // SECURITY: Private key must be provided via environment variable
-  testPrivateKey: (() => {
-    const key = process.env.TEST_PRIVATE_KEY;
-    if (!key) {
-      throw new Error('TEST_PRIVATE_KEY environment variable is required. Never hardcode private keys!');
-    }
-    return key.startsWith('0x') ? key as `0x${string}` : `0x${key}` as `0x${string}`;
-  })(),
+  testPrivateKey: (process.env.TEST_PRIVATE_KEY as `0x${string}`),
+  testPrivateKey2: (process.env.TEST_PRIVATE_KEY_2 as `0x${string}`),
 
   // Default settings
   defaults: {

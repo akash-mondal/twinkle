@@ -34,14 +34,23 @@ export function createPublicClientInstance(): PublicClient {
 /**
  * Create a wallet client for signing transactions
  */
-export function createWalletClientInstance(privateKey?: string): WalletClient {
-  const account = privateKeyToAccount(
-    (privateKey || CONFIG.testPrivateKey) as `0x${string}`
-  );
+export function createWalletClientInstance(accountStr?: `0x${string}`): WalletClient {
+  const account = accountStr
+    ? privateKeyToAccount(accountStr === getAccount2().address ? CONFIG.testPrivateKey2 : CONFIG.testPrivateKey)
+    : getAccount();
 
   return createWalletClient({
     account,
-    chain,
+    chain: CONFIG.chainId === 1 ? mainnet : sepolia,
+    transport: http(CONFIG.rpcUrl),
+  });
+}
+
+// Explicit helper for second wallet
+export function createWalletClient2(): WalletClient {
+  return createWalletClient({
+    account: getAccount2(),
+    chain: CONFIG.chainId === 1 ? mainnet : sepolia,
     transport: http(CONFIG.rpcUrl),
   });
 }
@@ -53,6 +62,10 @@ export function getAccount(privateKey?: string): Account {
   return privateKeyToAccount(
     (privateKey || CONFIG.testPrivateKey) as `0x${string}`
   );
+}
+
+export function getAccount2(): Account {
+  return privateKeyToAccount(CONFIG.testPrivateKey2);
 }
 
 /**

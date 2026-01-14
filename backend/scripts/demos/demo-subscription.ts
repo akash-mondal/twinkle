@@ -27,7 +27,7 @@ async function main() {
   console.log('='.repeat(60));
   console.log('Twinkle - Subscription Demo');
   console.log('='.repeat(60));
-  console.log(`Chain: Sepolia (${CONFIG.chainId})`);
+  console.log(`Chain: ${CONFIG.chainName} (${CONFIG.chainId})`);
   console.log(`TwinkleSubscription: ${CONFIG.contracts.TwinkleSubscription}\n`);
 
   // Setup clients

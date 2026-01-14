@@ -24,7 +24,7 @@ async function main() {
   console.log('='.repeat(60));
   console.log('Twinkle - Revenue Split Demo');
   console.log('='.repeat(60));
-  console.log(`Chain: Sepolia (${CONFIG.chainId})`);
+  console.log(`Chain: ${CONFIG.chainName} (${CONFIG.chainId})`);
   console.log(`TwinkleSplit: ${CONFIG.contracts.TwinkleSplit}\n`);
 
   // Setup clients
@@ -57,9 +57,9 @@ async function main() {
   // Define recipients and their shares (basis points, 10000 = 100%)
   // Using the same address for demo - in production these would be different
   const recipients = [
-    { address: account.address, share: 5000n }, // 50%
-    { address: '0x1111111111111111111111111111111111111111' as `0x${string}`, share: 3000n }, // 30%
-    { address: '0x2222222222222222222222222222222222222222' as `0x${string}`, share: 2000n }, // 20%
+    { address: account.address, share: 500000n }, // 50%
+    { address: '0x1111111111111111111111111111111111111111' as `0x${string}`, share: 300000n }, // 30%
+    { address: '0x2222222222222222222222222222222222222222' as `0x${string}`, share: 200000n }, // 20%
   ];
 
   console.log('Split configuration:');
@@ -96,7 +96,7 @@ async function main() {
     // ===== STEP 4: Deposit to split =====
     console.log('\n--- Step 4: Depositing to Split ---');
 
-    const depositAmount = parseEther('100'); // 100 tMNEE
+    const depositAmount = parseEther('1'); // 1 tMNEE
 
     // Ensure allowance
     const allowance = await getMneeAllowance(
@@ -111,7 +111,7 @@ async function main() {
         walletClient,
         publicClient,
         CONFIG.contracts.TwinkleSplit,
-        parseEther('10000')
+        parseEther('10')
       );
     }
 
@@ -133,12 +133,20 @@ async function main() {
 
     console.log('Expected distribution:');
     recipients.forEach((r) => {
-      const amount = (depositAmount * r.share) / 10000n;
+      const amount = (depositAmount * r.share) / 1000000n;
       console.log(`  ${r.address.slice(0, 10)}...: ${formatEther(amount)} tMNEE`);
     });
 
     console.log('\nSending distribute transaction...');
-    const distributeHash = await distributeSplit(walletClient, publicClient, splitId);
+    console.log('\nSending distribute transaction...');
+    // distributeSplit now expects recipients and percentages
+    const distributeHash = await distributeSplit(
+      walletClient,
+      publicClient,
+      splitId,
+      recipients.map((r) => r.address),
+      recipients.map((r) => r.share)
+    );
     console.log(`Distribute TX: ${distributeHash}`);
 
     // Wait for indexer

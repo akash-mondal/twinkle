@@ -1,0 +1,32 @@
+{
+    "name": "@twinkle/sdk",
+    "version": "0.1.0",
+    "description": "official SDK for the Twinkle Protocol",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "clean": "rm -rf dist"
+    },
+    "keywords": [
+        "twinkle",
+        "web3",
+        "mnee",
+        "payments",
+        "subscriptions",
+        "escrow"
+    ],
+    "author": "Twinkle Team",
+    "license": "MIT",
+    "dependencies": {
+        "viem": "^2.16.3",
+        "dotenv": "^16.4.5"
+    },
+    "devDependencies": {
+        "tsup": "^8.0.2",
+        "typescript": "^5.4.5",
+        "@types/node": "^20.12.7"
+    }
+}

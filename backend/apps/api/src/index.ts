@@ -1,3 +1,4 @@
+import 'dotenv/config';
 /**
  * Twinkle REST API
  * Provides read access to indexed blockchain data

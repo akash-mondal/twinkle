@@ -1,7 +1,7 @@
 {
   "name": "@twinkle/shared",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "Shared types, constants, and utilities for Twinkle Protocol",
   "type": "module",
   "main": "./dist/index.js",
@@ -36,7 +36,8 @@
   },
   "dependencies": {
     "hono": "^4.11.3",
-    "viem": "^2.21.0"
+    "viem": "^2.21.0",
+    "pino": "^10.1.1"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
