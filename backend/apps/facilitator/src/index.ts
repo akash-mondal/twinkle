@@ -1,4 +1,4 @@
-import 'dotenv/config';
+
 /**
  * Twinkle x402 Facilitator Server
  * Handles EIP-712 verification and settlement for AI agent payments
