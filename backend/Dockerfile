@@ -14,7 +14,7 @@ COPY apps/facilitator/package.json ./apps/facilitator/
 COPY apps/indexer/package.json ./apps/indexer/
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 # Copy source
 COPY packages/shared ./packages/shared
