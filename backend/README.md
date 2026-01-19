@@ -31,16 +31,44 @@ backend/
 # Install dependencies
 pnpm install
 
-# Start infrastructure
+# Start infrastructure (PostgreSQL + Redis)
 pnpm docker:up
 
 # Copy environment file and configure
 cp .env.example .env
-# Edit .env with your RPC URL
+# Edit .env with your RPC URL and other settings
 
-# Run services
+# Build shared package first (required before running services)
+pnpm --filter @twinkle/shared build
+
+# Run all services
 pnpm dev
 ```
+
+### Running Services Individually
+
+If you encounter issues with `pnpm dev`, you can start services individually:
+
+```bash
+# Terminal 1: Start the indexer
+pnpm indexer:dev
+
+# Terminal 2: Start the facilitator
+pnpm facilitator:dev
+
+# Terminal 3: Start the API
+pnpm api:dev
+```
+
+### Service Ports
+
+| Service | Port | URL |
+|---------|------|-----|
+| API | 3000 | http://localhost:3000 |
+| Facilitator | 3001 | http://localhost:3001 |
+| Indexer (GraphQL) | 42069 | http://localhost:42069 |
+| PostgreSQL | 5432 | - |
+| Redis | 6379 | - |
 
 ## Services
 
