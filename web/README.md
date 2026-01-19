@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Twinkle Web
 
-## Getting Started
+Next.js frontend for the Twinkle payment protocol.
 
-First, run the development server:
+## Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+- Backend services running (see `../backend/README.md`)
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Start development server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Port Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Important:** The frontend runs on port 3000 by default, which conflicts with the backend API.
 
-## Learn More
+When running both frontend and backend together:
 
-To learn more about Next.js, take a look at the following resources:
+1. Start the frontend first (takes port 3000)
+2. Start the backend API with a different port:
+   ```bash
+   cd ../backend/apps/api
+   API_PORT=3002 pnpm dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Or start the frontend on a different port:
+```bash
+PORT=3003 pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Recommended Development Setup
 
-## Deploy on Vercel
+| Service | Port | Command |
+|---------|------|---------|
+| Frontend | 3000 | `pnpm dev` (in `/web`) |
+| Backend API | 3002 | `API_PORT=3002 pnpm api:dev` (in `/backend`) |
+| Facilitator | 3001 | `pnpm facilitator:dev` (in `/backend`) |
+| Indexer | 42069 | `pnpm indexer:dev` (in `/backend`) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create a `.env.local` file:
+
+```bash
+# API URL (use port 3002 if running alongside frontend)
+NEXT_PUBLIC_API_URL=http://localhost:3002
+
+# Chain ID (1 for Mainnet, 11155111 for Sepolia)
+NEXT_PUBLIC_CHAIN_ID=1
+```
+
+## Tech Stack
+
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **Tailwind CSS 4** - Styling
+- **Wagmi + Viem** - Ethereum interactions
+- **Privy** - Web3 authentication
+- **Framer Motion + GSAP** - Animations
+- **TanStack Query** - Data fetching
+
+## Project Structure
+
+```
+web/
+├── src/
+│   ├── app/              # Next.js App Router pages
+│   │   ├── page.tsx      # Landing page
+│   │   ├── docs/         # Documentation pages
+│   │   └── apps/         # Applications showcase
+│   ├── components/
+│   │   ├── landing/      # Landing page components
+│   │   ├── docs/         # Documentation components
+│   │   ├── ui/           # Reusable UI components
+│   │   └── shared/       # Shared components
+│   └── lib/              # Utility functions
+└── public/               # Static assets
+```
+
+## Scripts
+
+```bash
+pnpm dev      # Start development server
+pnpm build    # Build for production
+pnpm start    # Start production server
+pnpm lint     # Run ESLint
+```

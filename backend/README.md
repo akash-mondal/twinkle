@@ -70,6 +70,46 @@ pnpm api:dev
 | PostgreSQL | 5432 | - |
 | Redis | 6379 | - |
 
+### Running with Frontend
+
+**Port Conflict:** The API defaults to port 3000, which conflicts with the Next.js frontend.
+
+When running both frontend and backend together, start the API on a different port:
+
+```bash
+# Option 1: Start API on port 3002
+API_PORT=3002 pnpm api:dev
+
+# Option 2: Or run individual services with custom port
+cd apps/api && API_PORT=3002 pnpm dev
+```
+
+**Recommended full-stack development setup:**
+
+```bash
+# Terminal 1: Start infrastructure
+pnpm docker:up
+
+# Terminal 2: Start indexer
+pnpm indexer:dev
+
+# Terminal 3: Start facilitator
+pnpm facilitator:dev
+
+# Terminal 4: Start API on port 3002 (to avoid conflict with frontend)
+API_PORT=3002 pnpm api:dev
+
+# Terminal 5: Start frontend (in /web directory)
+cd ../web && pnpm dev
+```
+
+| Service | Port | Notes |
+|---------|------|-------|
+| Frontend | 3000 | Next.js dev server |
+| Facilitator | 3001 | x402 settlement |
+| API | 3002 | REST API (use `API_PORT=3002`) |
+| Indexer | 42069 | GraphQL endpoint |
+
 ## Services
 
 ### Ponder Indexer (`apps/indexer`)
