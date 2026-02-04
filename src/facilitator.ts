@@ -57,7 +57,12 @@ export class TwinkleFacilitator {
             console.log(`[Facilitator] Relay Tx Sent: ${tx.hash}`);
             await tx.wait();
             results.push(tx.hash);
-        } catch (err: any) {
+      
+      // TELEMETRY: Report to dev dashboard
+      if (payload.meta?.dashboardId) {
+          await this.reportToDashboard(payload.meta.dashboardId, tx.hash, intent.permit.permitted.amount);
+      }
+    } catch (err: any) {
             console.error(`[Facilitator] RELAY REVERTED:`, err.message);
             if (err.data) console.error(`[Facilitator] Error Data:`, err.data);
             results.push("Error");
@@ -69,5 +74,9 @@ export class TwinkleFacilitator {
 
   private async triggerRebate(agentAddress: string) {
       console.log(`[Facilitator] 🎁 Sending MNEE Migration Rebate to Agent...`);
+  }
+
+  private async reportToDashboard(dashboardId: string, txHash: string, amount: string) {
+      console.log(`[Facilitator] 📊 Reporting Telemetry to Dashboard [${dashboardId}]: Tx ${txHash} for ${amount}`);
   }
 }

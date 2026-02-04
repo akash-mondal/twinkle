@@ -11,6 +11,7 @@ export interface AgentConfig {
   providerUrl: string;
   developerAddress: string;
   autoSwitch?: boolean;
+  dashboardId?: string;
 }
 
 export class TwinkleAgent {
@@ -19,12 +20,14 @@ export class TwinkleAgent {
   private client: AxiosInstance;
   private bridge: TwinkleBridge;
   private autoSwitch: boolean;
+  private dashboardId?: string;
 
   constructor(config: AgentConfig) {
     const provider = new ethers.JsonRpcProvider(config.providerUrl);
     this.wallet = new ethers.Wallet(config.privateKey, provider);
     this.developerAddress = config.developerAddress;
     this.autoSwitch = config.autoSwitch ?? true;
+    this.dashboardId = config.dashboardId;
     this.client = axios.create();
     this.bridge = new TwinkleBridge();
 
@@ -79,7 +82,8 @@ export class TwinkleAgent {
       meta: {
           originalCurrency: details.currency,
           settlementCurrency: 'MNEE',
-          conversionApplied
+          conversionApplied,
+          dashboardId: this.dashboardId
       }
     })).toString('base64');
     
