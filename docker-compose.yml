@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  facilitator:
+    build: .
+    container_name: twinkle-facilitator
+    restart: always
+    environment:
+      - FACILITATOR_PRIVATE_KEY=${FACILITATOR_PRIVATE_KEY}
+      - RPC_URL=${RPC_URL:-https://rpc.ankr.com/eth}
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      - twinkle-net
+
+networks:
+  twinkle-net:
+    driver: bridge

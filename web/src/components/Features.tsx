@@ -1,4 +1,5 @@
 "use client";
+import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const features = [
@@ -6,8 +7,8 @@ const features = [
     title: "Twinkle SDK — Zero gas, zero friction",
     description: "Connect AI agents to MNEE with one import. Deploy to Mainnet with zero gas overhead.",
     links: [
-      { label: "Start building", href: "/docs/quickstart" },
-      { label: "Learn more", href: "/docs/sdk" },
+      { label: "Start building", href: "/docs#agent" },
+      { label: "Learn more", href: "/docs#intro" },
     ],
     code: {
       filename: "agent.ts",
@@ -25,7 +26,6 @@ await agent.pay({
   amount: '10.00',
   currency: 'MNEE'
 });`,
-      theme: 'dark'
     }
   },
   {
@@ -52,121 +52,141 @@ relay.on('payment', async (req) => {
   const mnee = await relay.convert(req);
   console.log('Settled:', mnee.txid);
 });`,
-      theme: 'light'
     }
   }
 ];
 
-const CodeBlock = ({ code, theme }: { code: typeof features[0]['code'], theme: 'dark' | 'light' }) => {
-  const isDark = theme === 'dark';
-  
+const CodeBlock = ({ code }: { code: typeof features[0]['code'] }) => {
   return (
-    <motion.div
-      variants={{
-        rest: { scale: 1, y: 0, boxShadow: '0 0 0 rgba(0,0,0,0)' },
-        hover: { 
-          scale: 1.02, 
-          y: -4,
-          boxShadow: isDark ? '0 20px 40px -12px rgba(0,0,0,0.5)' : '0 20px 40px -12px rgba(0,0,0,0.15)',
-          borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'
-        }
-      }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      style={{
-        background: isDark ? 'var(--bg-dark)' : 'var(--bg-white)',
-        border: `1px solid ${isDark ? 'var(--border-dark)' : 'var(--border)'}`,
-        borderRadius: '8px',
-        overflow: 'hidden',
-        height: '280px',
-      }}
-    >
+    <div className="bg-[#0a0a0a] rounded-lg overflow-hidden h-[280px] border border-zinc-800/50">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '12px 16px',
-          borderBottom: `1px solid ${isDark ? 'var(--border-dark)' : 'var(--border)'}`,
-        }}
-      >
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: isDark ? '#3f3f46' : '#e4e4e7' }} />
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: isDark ? '#3f3f46' : '#e4e4e7' }} />
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: isDark ? '#3f3f46' : '#e4e4e7' }} />
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-800/50 bg-[#111]">
+        <div className="flex gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+          <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+          <span className="w-3 h-3 rounded-full bg-[#27c93f]" />
         </div>
-        <span style={{ 
-          fontSize: '11px', 
-          fontWeight: 500, 
-          color: isDark ? 'var(--text-muted)' : 'var(--text-secondary)',
-          marginLeft: '8px'
-        }}>
+        <span className="text-[11px] font-medium text-zinc-500 ml-2">
           {code.filename}
         </span>
       </div>
       
       {/* Code */}
-      <pre
-        style={{
-          padding: '16px',
-          margin: 0,
-          fontSize: '11px',
-          fontFamily: 'SF Mono, Monaco, Consolas, monospace',
-          lineHeight: 1.6,
-          color: isDark ? '#a1a1aa' : 'var(--text-secondary)',
-          overflow: 'hidden',
-          whiteSpace: 'pre',
-        }}
-      >
+      <pre className="p-4 text-[11px] font-mono leading-relaxed text-zinc-400 overflow-hidden whitespace-pre">
         {code.content}
       </pre>
-    </motion.div>
+    </div>
   );
 };
 
 export const Features = () => {
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cardsContainer = cardsRef.current;
+    if (!cardsContainer) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const cards = cardsContainer.querySelectorAll<HTMLElement>('.spotlight-card');
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    };
+
+    cardsContainer.addEventListener('mousemove', handleMouseMove);
+    return () => cardsContainer.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <section style={{ padding: '96px 32px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <section className="py-16 md:py-24 px-4 md:px-8">
+      <style jsx global>{`
+        .spotlight-card {
+          position: relative;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 16px;
+          padding: 1px;
+        }
+
+        .spotlight-card::before,
+        .spotlight-card::after {
+          border-radius: inherit;
+          content: "";
+          height: 100%;
+          left: 0;
+          opacity: 0;
+          position: absolute;
+          top: 0;
+          transition: opacity 500ms;
+          width: 100%;
+          pointer-events: none;
+        }
+
+        .spotlight-card::before {
+          background: radial-gradient(
+            800px circle at var(--mouse-x) var(--mouse-y), 
+            rgba(255, 255, 255, 0.06),
+            transparent 40%
+          );
+          z-index: 3;
+        }
+
+        .spotlight-card::after {  
+          background: radial-gradient(
+            600px circle at var(--mouse-x) var(--mouse-y), 
+            rgba(231, 139, 31, 0.4),
+            transparent 40%
+          );
+          z-index: 1;
+        }
+
+        .spotlight-card:hover::before {
+          opacity: 1;
+        }
+
+        #feature-cards:hover > .spotlight-card::after {
+          opacity: 1;
+        }
+
+        .spotlight-card-content {
+          background-color: #fafafa;
+          border-radius: 15px;
+          padding: 16px;
+          position: relative;
+          z-index: 2;
+        }
+        
+        @media (min-width: 768px) {
+          .spotlight-card-content {
+            padding: 24px;
+          }
+        }
+      `}</style>
+
+      <div className="max-w-[1200px] mx-auto">
         {/* Section Header */}
-        <div style={{ marginBottom: '64px' }}>
+        <div className="mb-10 md:mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            style={{ marginBottom: '32px' }}
+            className="mb-6 md:mb-8"
           >
-           <span style={{
-              display: 'inline-block',
-              padding: '8px 16px',
-              backgroundColor: '#000',
-              color: '#FFF',
-              borderRadius: '100px',
-              fontSize: '11px',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-            }}>
+           <span className="inline-block px-4 py-2 bg-black text-white rounded-full text-[11px] font-bold tracking-widest uppercase shadow-lg">
               SHIP WITHOUT GAS
             </span>
           </motion.div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 items-start md:items-center">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              style={{
-                fontFamily: 'Georgia, "Times New Roman", serif',
-                fontStyle: 'italic',
-                fontWeight: 400,
-                fontSize: 'clamp(32px, 5vw, 48px)',
-                lineHeight: 1.1,
-                letterSpacing: '-0.02em',
-                color: 'var(--text-primary)',
-              }}
+              className="font-serif italic font-normal text-3xl md:text-5xl leading-tight tracking-tight text-black"
             >
               Seamless DevEx for agents and wallets
             </motion.h2>
@@ -175,94 +195,54 @@ export const Features = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              style={{
-                fontSize: '15px',
-                lineHeight: 1.7,
-                color: 'var(--text-secondary)',
-                paddingTop: '8px',
-              }}
+              className="text-sm md:text-base leading-relaxed text-zinc-600"
             >
               Whether your consumers are humans or AI agents, Twinkle handles settlement so devs focus on product.
             </motion.p>
           </div>
         </div>
 
-        {/* Feature Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Feature Cards - Single column on mobile */}
+        <div id="feature-cards" ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {features.map((feature, idx) => (
             <motion.div
               key={idx}
-              initial="rest"
-              whileHover="hover"
-              animate="rest"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.15 }}
-              style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: '12px',
-                padding: '24px',
-                cursor: 'default'
-              }}
+              className="spotlight-card"
             >
-              {/* Code Preview */}
-              <CodeBlock code={feature.code} theme={feature.code.theme as 'dark' | 'light'} />
-              
-              {/* Content */}
-              <motion.div 
-                variants={{
-                  rest: { y: 0 },
-                  hover: { y: -2 }
-                }}
-                transition={{ duration: 0.3 }}
-                style={{ marginTop: '24px' }}
-              >
-                <h3 style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontStyle: 'normal',
-                  fontSize: '18px',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  marginBottom: '8px',
-                }}>
-                  {feature.title}
-                </h3>
-                <p style={{
-                  fontSize: '14px',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '20px',
-                  lineHeight: 1.6,
-                }}>
-                  {feature.description}
-                </p>
+              <div className="spotlight-card-content">
+                {/* Code Preview */}
+                <CodeBlock code={feature.code} />
                 
-                {/* Links */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-                  {feature.links.map((link, i) => (
-                    <motion.a
-                      key={i}
-                      href={link.href}
-                      whileHover={{ x: 2, color: 'var(--text-primary)' }}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px',
-                        fontWeight: 500,
-                        color: 'var(--text-primary)',
-                        textDecoration: 'none',
-                        transition: 'color 0.2s',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {link.label}
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M5 3L8 6L5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </motion.a>
-                  ))}
+                {/* Content */}
+                <div className="mt-4 md:mt-6">
+                  <h3 className="text-base md:text-lg font-semibold text-black mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-zinc-600 mb-4 md:mb-5 leading-relaxed">
+                    {feature.description}
+                  </p>
+                  
+                  {/* Links */}
+                  <div className="flex flex-wrap gap-3 md:gap-5">
+                    {feature.links.map((link, i) => (
+                      <a
+                        key={i}
+                        href={link.href}
+                        className="inline-flex items-center gap-1 text-xs md:text-sm font-medium text-black hover:text-[#E78B1F] transition-colors"
+                      >
+                        {link.label}
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <path d="M5 3L8 6L5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           ))}
         </div>

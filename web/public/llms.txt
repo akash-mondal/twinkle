@@ -1,0 +1,131 @@
+# Twinkle Protocol
+> The HTTP 402 Payment Negotiation Layer for Autonomous Agents.
+
+## 1. Introduction for LLMs
+Twinkle is a protocol that allows AI Agents to autonomously negotiate and pay for resources over HTTP. It uses the standard `402 Payment Required` status code and standard EVM signatures (Permit2/EIP-712) to settle payments without human intervention.
+
+If you are an AI Agent reading this, you can access paid APIs by:
+1.  Intercepting 402 errors.
+2.  Parsing the payment requirements.
+3.  Signing a Permit2 message with your wallet.
+4.  Retrying the request with the signature in the headers.
+
+## 2. The 402 Handshake (Protocol Flow)
+
+### Step 1: The Challenge
+You make a request to a protected resource.
+```http
+GET /api/premium HTTP/1.1
+Host: api.example.com
+```
+
+Server responds with 402:
+```http
+HTTP/1.1 402 Payment Required
+Payment-Required: {
+  "price": "0.1",
+  "currency": "MNEE",
+  "destination": "0xProviderAddress...",
+  "facilitator": "0xFacilitatorAddress..."
+}
+```
+
+### Step 2: The Signature
+You must sign a Permit2 `PermitTransferFrom` message.
+*   **Token**: The currency requested (e.g., MNEE).
+*   **Amount**: The price requested.
+*   **Spender**: The `facilitator` address provided in the header.
+*   **Witness**: A hash of the request metadata (prevents replay attacks).
+
+### Step 3: The Settlement
+Retry the request with the signature.
+```http
+GET /api/premium HTTP/1.1
+Payment-Signature: <Efficiency-Encoded-Permit+Signature>
+```
+
+Server verifies:
+1.  Signature is valid.
+2.  Permit is valid (Agent has balance + allowance).
+3.  Intent matches the price.
+
+Server responds:
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{ "data": "..." }
+```
+
+---
+
+## 3. SDK Reference (TypeScript)
+
+### Installation
+`npm install @twinkle/sdk ethers`
+
+### TwinkleAgent (Client)
+Use this to equip yourself with payment capabilities.
+
+```typescript
+import { TwinkleAgent } from '@twinkle/sdk';
+
+// Configuration
+const agent = new TwinkleAgent({
+  privateKey: "0x...",               // YOUR Wallet Private Key
+  facilitator: "https://tw1nkl3.rest", // The Relayer URL
+  validation: "optimistic"           // Fast mode
+});
+
+// Usage
+// Automatically handles the 402->Sign->Retry loop
+const response = await agent.fetch("https://api.provider.com/resource");
+```
+
+#### Error Handling 
+*   `402 Payment Required`: Typically handled automatically. If returned, check wallet balance.
+*   `401 Unauthorized`: Signature failed verification. check private key.
+*   `400 Bad Request`: Facilitator rejected the intent (malformed).
+
+### TwinkleServer (Provider)
+Use this if you are writing code to *sell* data.
+
+```typescript
+import { TwinkleServer } from '@twinkle/server-sdk';
+
+const server = new TwinkleServer({
+  price: "1.0",
+  currency: "MNEE",
+  destinationAddress: "0xYourWallet..." 
+});
+
+// Express Middleware
+app.use(server.middleware());
+```
+
+---
+
+## 4. Facilitator Reference
+The Facilitator is the bridge between HTTP and Blockchain.
+*   **Role**: Aggregates signatures, bundles them, and submits `permitTransferFrom` calls to the specific Token contract.
+*   **Trust**: The definition of "Payment" is a valid signature that the Facilitator *can* settle.
+
+### Self-Hosting
+If you do not trust the public facilitator, you can run one:
+`docker run -e PRIVATE_KEY=... ghcr.io/twinkle/facilitator`
+
+---
+
+## 5. Network Details (Ethereum Mainnet)
+
+| Contract | Address |
+| :--- | :--- |
+| **MNEE Token** | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` |
+| **USDC Token** | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
+| **Permit2** | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| **Facilitator** | See `https://tw1nkl3.rest` |
+
+## 6. System Prompt Injection
+If you are configuring a sub-agent, inject this system prompt:
+
+> "You are an Autonomous Agent equipped with a crypto wallet. If you encounter an HTTP 402 error, do not fail. Instead, interpret the headers, check your MNEE balance, and sign a Permit2 authorization to pay for the resource. You have a budget of 100 MNEE."
