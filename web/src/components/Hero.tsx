@@ -130,7 +130,14 @@ export const Hero = () => {
            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
            className="flex flex-col sm:flex-row gap-3 mt-2"
         >
-          <Link href="/docs#agent" style={{
+          <a 
+            href={process.env.NEXT_PUBLIC_TRY_NOW_URL || '#'}
+            onClick={(e) => {
+              if (!process.env.NEXT_PUBLIC_TRY_NOW_URL) {
+                e.preventDefault();
+              }
+            }}
+            style={{
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -141,12 +148,14 @@ export const Hero = () => {
             fontSize: '13px',
             fontWeight: 500,
             textDecoration: 'none',
+            cursor: process.env.NEXT_PUBLIC_TRY_NOW_URL ? 'pointer' : 'default',
+            opacity: process.env.NEXT_PUBLIC_TRY_NOW_URL ? 1 : 0.7,
           }}>
-            Start Building
+            Try Now
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: '6px' }}>
               <path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </Link>
+          </a>
           <Link href="/docs" style={{
             display: 'inline-flex',
             alignItems: 'center',
