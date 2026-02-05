@@ -1,0 +1,47 @@
+# NPM Ignore - Exclude from published package
+
+# Web app (separate deployment)
+web/
+
+# Demo files
+*_demo.ts
+power_demo.ts
+adoption_demo.ts
+base_case_demo.ts
+batch_case_demo.ts
+example.ts
+inspect_types.ts
+verify_mainnet.ts
+check_usdc.ts
+
+# Docker
+Dockerfile
+docker-compose.yml
+docker-compose.prod.yml
+
+# Environment
+.env
+.env.local
+.env.example
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Source (we ship dist)
+src/
+
+# TypeScript config (not needed in package)
+tsconfig.json
+
+# Tests
+*.test.ts
+__tests__/
+
+# Misc
+*.log
+.DS_Store
